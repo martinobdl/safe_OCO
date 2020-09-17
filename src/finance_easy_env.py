@@ -12,7 +12,8 @@ class GBM(Env):
         self.min_loss = -np.log(1.2)
         self.max_loss = -np.log(0.8)
 
-    def step(self, x_t):
+    def step(self, prediction):
+        x_t = prediction["x_t"]
         r_t = np.random.normal(size=self.n_assets)*self.std + self.means
         r_t = np.maximum(0.8, r_t)
         r_t = np.minimum(1.2, r_t)
@@ -42,13 +43,14 @@ class GBM_safe(GBM):
         self.safe_strategy = safe_strategy
         self.feedback = None
 
-    def step(self, x_t):
+    def step(self, prediction):
+        x_t = prediction["x_t"]
         r_t = np.random.normal(size=self.n_assets)*self.std + self.means
         r_t = np.maximum(0.8, r_t)
         r_t = np.minimum(1.2, r_t)
         loss_t = np.array([-np.log(np.dot(r_t, x_t))])+-self.min_loss
         grad_t = -r_t/np.dot(r_t, x_t)
-        recc_t = self.safe_strategy(self.feedback) if self.feedback is not None else self.safe_strategy.x_t
+        recc_t = self.safe_strategy(self.feedback)['x_t'] if self.feedback is not None else self.safe_strategy.x_t
         loss_def_t = np.array([-np.log(np.dot(r_t, recc_t))])+-self.min_loss
 
         feedback = {

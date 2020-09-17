@@ -4,7 +4,7 @@ class Env:
     def __init__(self):
         pass
 
-    def step(self, x_t):
+    def step(self, prediction):
 
         # feedback is the dictionary that the algo
         # will use at time t to predict the t+1 outcome
@@ -22,3 +22,6 @@ class Env:
 
     def seed(self, rnd):
         pass
+
+    def to_dict(self) -> dict:
+        raise NotImplementedError
