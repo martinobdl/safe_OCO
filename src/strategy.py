@@ -16,7 +16,7 @@ class Strategy:
         pass
 
     def to_dict(self) -> dict:
-        # everithing we need to reproduce the algo
+        # everything we need to reproduce the algo
         pass
 
 
@@ -30,8 +30,7 @@ class SafeStrategy:
         self.restart()
         self.alpha = alpha
         self.Ca = min(self.G*self.D - self.alpha*self.e_l, e_u - (1+alpha)*e_l)
-        self.name = "SafeStartegy"
-        self.restart()
+        self.name = "SafeStrategy"
 
     def __call__(self, feedback):
         choice = self._forward(feedback)
@@ -40,9 +39,8 @@ class SafeStrategy:
     def restart(self):
         self.base.restart()
         self.x_t = self.base.x0
-        self.Loss_star = 0
+        self.Loss = 0
         self.Loss_def = 0
-        self.loss = 0
         self.t = 0
 
     def _forward(self, feedback):
@@ -59,9 +57,9 @@ class SafeStrategy:
         return prediction
 
     def b(self, feedback):
-        self.Loss_star += feedback["loss_t"]
+        self.Loss += feedback["loss_t"]
         self.Loss_def += feedback["loss_def_t"]
-        if self.Loss_star >= (1+self.alpha)*self.Loss_def - self.Ca:
+        if self.Loss >= (1+self.alpha)*self.Loss_def - self.Ca:
             return np.array([1])
         else:
             return np.array([0])
@@ -78,20 +76,20 @@ class SafeStrategy:
                 }
 
 
-class SafeStartegyHybrid(SafeStrategy):
+class SafeStrategyHybrid(SafeStrategy):
 
     def __init__(self, base, alpha, G, D, e_l, e_u):
         super().__init__(base, alpha, G, D, e_l, e_u)
-        self.name = "SafeStartegyHybrid"
+        self.name = "SafeStrategyHybrid"
 
     def b(self, feedback):
-        self.Loss_star += feedback["loss_t"]
+        self.Loss += feedback["loss_t"]
         self.Loss_def += feedback["loss_def_t"]
-        return max(np.array([0]), 1+(self.Loss_star - self.Loss_def*(1+self.alpha)-self.alpha*self.e_l)/(self.G*self.D))
+        return max(np.array([0]), 1+(self.Loss - self.Loss_def*(1+self.alpha)-self.alpha*self.e_l)/(self.G*self.D))
 
     def restart(self):
         self.t = 0
         self.base.restart()
         self.x_t = self.base.x0
-        self.Loss_star = 0
+        self.Loss = 0
         self.Loss_def = 0
