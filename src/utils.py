@@ -1,6 +1,15 @@
 import numpy as np
 
 
+def logit(x):
+    return 1/(1+np.exp(-x))
+
+
+def accuracy(env, param):
+    y_hat = logit(np.dot(env.X, param))
+    return np.sum(env.target == (y_hat > 0.5))/len(env.X)
+
+
 def project(v):
     mu = np.sort(v)[::-1]
     rho = np.max(np.where(mu-(np.cumsum(mu)-1)/np.arange(1, len(mu)+1) > 0))
