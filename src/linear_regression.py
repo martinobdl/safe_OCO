@@ -39,9 +39,6 @@ class OLR(Env):
 
         return feedback
 
-    def seed(self):
-        np.random.seed(self.rnd)
-
     def restart(self):
         self.t = 0
         self.x = np.random.uniform(size=self.n_feature)

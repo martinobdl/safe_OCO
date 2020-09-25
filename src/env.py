@@ -1,3 +1,4 @@
+import numpy as np
 
 
 class Env:
@@ -20,8 +21,8 @@ class Env:
     def restrat(self):
         pass
 
-    def seed(self, rnd):
-        pass
+    def seed(self):
+        np.random.seed(self.rnd)
 
     def to_dict(self) -> dict:
         raise NotImplementedError
