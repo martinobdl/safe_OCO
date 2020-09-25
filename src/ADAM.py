@@ -1,5 +1,4 @@
 from strategy import Strategy
-# import utils
 
 
 class ADAM(Strategy):
@@ -46,16 +45,18 @@ class ADAM(Strategy):
 if __name__ == "__main__":
 
     import numpy as np
-    from linear_regression import OLR
+    # from linear_regression import OLR
+    from IMDB_env import IMDB
     from experiment import Experiment
+    import utils
 
-    n = 2
+    n = 10000
     x0 = np.ones(n)/n
     algo = ADAM(x0)
-    env = OLR(2, max_T=1000)
+    # env = OLR(n, max_T=1000)
+    env = IMDB()
     exp = Experiment(algo, env)
-    exp.seed(1)
     exp.run()
 
-    print("True: ", env.beta)
-    print("ADAM: ", algo.x_t)
+    print("ADAM: ", utils.accuracy(env, algo.x_t))
+    print("Best: ", utils.accuracy(env, env.beta_best))
