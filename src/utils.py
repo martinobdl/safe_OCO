@@ -2,7 +2,7 @@ import numpy as np
 
 
 def logit(x):
-    return 1/(1+np.exp(-x))
+    return clip(1/(1+np.exp(-x)), 1e-4, 1-1e-4)
 
 
 def accuracy(env, param):
@@ -17,10 +17,14 @@ def project(v):
     return np.maximum(v-theta, 0)
 
 
+def clip(x, a, b):
+    return np.minimum(np.maximum(x, a), b)
+
+
 def clean_dump_vector(a: str) -> np.ndarray:
 
-    def _clean(x: str) -> float:
-        if x == '':
+    def _clean(x: str, sign: bool = True) -> float:
+        if x == '' or x == "...":
             return None
         elif ' ' in x:
             x = x.replace(' ', '')
@@ -34,8 +38,10 @@ def clean_dump_vector(a: str) -> np.ndarray:
         elif ']' in x:
             x = x.replace(']', '')
             return _clean(x)
+        elif "-" == x[0]:
+            return _clean(x[1:], sign=False)
         elif x.replace('.', '', 1).isdigit():
-            return float(x)
+            return (sign*2-1)*float(x)
         else:
             breakpoint()
             raise Exception("{} is an invalid string".format(x))
