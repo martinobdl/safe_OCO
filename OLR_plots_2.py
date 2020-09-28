@@ -45,7 +45,7 @@ for k in D.keys():
     for y in D[k]:
         it += 1
         Y += np.array(y)
-    Y=Y/it
+    Y = Y/it
     plt.plot(np.arange(len(Y))*d['checkpoints'], Y, label=k, color=colors[k])
 plt.legend()
 plt.grid(True)
