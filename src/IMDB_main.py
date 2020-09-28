@@ -13,15 +13,14 @@ if __name__ == "__main__":
     x0 = np.ones(n)/n
 
     alpha = 0.01
-    e_l = 0
+    e_l = 1e-4
     nk = 1200
     c = 2
-    e_u = nk*c
+    e_u = 10
     G = nk**0.5
     D = (n*c*2)**0.5
     K_0 = D/G/2**0.5
 
-    env = SafeIMDB(times=100)
 
     check_point = 10
     folder = "experiments/IMDB"
