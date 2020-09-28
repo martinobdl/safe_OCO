@@ -33,12 +33,13 @@ for yaml_file in glob.glob('experiments/OLR/*.yaml'):
 
         if d['algo']['name'] == 'DPOGD':
             D_DP.append(D_tilde)
-            R_DP[float(np.round(D_tilde,1))].append(R_T)
-            T_DP[float(np.round(D_tilde,1))].append(tau)
+            R_DP[float(np.round(D_tilde, 1))].append(R_T)
+            T_DP[float(np.round(D_tilde, 1))].append(tau)
         else:
             D_C.append(D_tilde)
-            R_C[float(np.round(D_tilde,1))].append(R_T)
-            T_C[float(np.round(D_tilde,1))].append(tau)
+            R_C[float(np.round(D_tilde, 1))].append(R_T)
+            T_C[float(np.round(D_tilde, 1))].append(tau)
+
 
 def sort_and_plot(d, label):
     x = []
@@ -49,6 +50,7 @@ def sort_and_plot(d, label):
     y = [t for _, t in sorted(zip(x, y))]
     x.sort()
     plt.plot(x, y, '*-', label=label)
+
 
 plt.figure()
 sort_and_plot(R_DP, label='DPOGD')
