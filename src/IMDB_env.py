@@ -13,8 +13,9 @@ class IMDB(Env):
         self.max_T = self.X.shape[0]*times
 
     def step(self, prediction):
-        x = self.X[self.t % self.X.shape[0], :]
-        y = self.target[self.t % self.X.shape[0]]
+        idx = np.random.randint(0, len(self.X))
+        x = self.X[idx, :]
+        y = self.target[idx]
         H = prediction["x_t"]
 
         y_hat = utils.logit(np.dot(H, x))
@@ -53,11 +54,12 @@ class IMDB(Env):
 class SafeIMDB(IMDB):
     def __init__(self, times=1):
         super().__init__(times)
-        self.beta_def = np.load('./data/beta_logistic_IMDB.npy')[0]
+        self.beta_def = np.load('./data/beta_logistic_IMDB_weak.npy')[0]
 
     def step(self, prediction):
-        x = self.X[self.t % self.X.shape[0], :]
-        y = self.target[self.t % self.X.shape[0]]
+        idx = np.random.randint(0, len(self.X))
+        x = self.X[idx, :]
+        y = self.target[idx]
         H = prediction["x_t"]
 
         y_hat = utils.logit(np.dot(H, x))
