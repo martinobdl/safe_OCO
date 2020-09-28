@@ -21,6 +21,7 @@ if __name__ == "__main__":
     D = (n*c*2)**0.5
     K_0 = D/G/2**0.5
 
+    env = SafeIMDB(times=2)
 
     check_point = 10
     folder = "experiments/IMDB"
