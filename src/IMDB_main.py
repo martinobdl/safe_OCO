@@ -1,6 +1,7 @@
 from OGD import OGD
 from COGD import COGD
 from DPOGD import DPOGD
+from ADAM import ADAM
 from experiment import Experiment
 from IMDB_env import SafeIMDB
 import utils
@@ -21,14 +22,15 @@ if __name__ == "__main__":
     D = (n*c*2)**0.5
     K_0 = D/G/2**0.5
 
-    env = SafeIMDB(times=4)
+    env = SafeIMDB(times=10)
 
     check_point = 1
-    folder = "experiments/IMDB_test"
+    folder = "experiments/IMDB"
 
     base = OGD(x0, K_0, projection=None)
     algo_dp = DPOGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u, projection=None)
     algo_c = COGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u, projection=None)
+    adam = ADAM(x0=x0)
 
     print("running DPOGD")
     exp = Experiment(algo_dp, env, check_point=check_point)
@@ -45,10 +47,16 @@ if __name__ == "__main__":
     exp3.run()
     exp3.save(folder=folder)
 
+    print("running ADAM")
+    exp4 = Experiment(adam, env, check_point=check_point)
+    exp4.run()
+    exp4.save(folder=folder)
+
     print("accuracy DPOGD: ", utils.accuracy(env, algo_dp.x_t))
     print("accuracy COGD: ", utils.accuracy(env, algo_c.x_t))
     print("accuracy DPOGD base: ", utils.accuracy(env, algo_dp.base.x_t))
     print("accuracy COGD base: ", utils.accuracy(env, algo_c.base.x_t))
-    # print("accuracy OGD: ", utils.accuracy(env, base.x_t))
+    print("accuracy OGD: ", utils.accuracy(env, base.x_t))
+    print("accuracy ADAM: ", utils.accuracy(env, adam.x_t))
     print("accuracy def: ", utils.accuracy(env, env.beta_def))
     print("accuracy best :", utils.accuracy(env, env.beta_best))

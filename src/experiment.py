@@ -3,6 +3,7 @@ from string import ascii_letters
 import os
 import yaml
 import time
+from tqdm import tqdm
 
 
 class Experiment:
@@ -23,7 +24,8 @@ class Experiment:
         prediction = {}
         prediction["x_t"] = x_t
         count = 0
-        while not self.env.done():
+        # while not self.env.done():
+        for _ in tqdm(range(self.env.max_T)):
             if "x_LR" not in prediction.keys():
                 prediction["x_LR"] = prediction["x_t"]
             feedback = self.env.step(prediction)
