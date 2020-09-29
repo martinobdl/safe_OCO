@@ -5,7 +5,7 @@ import utils
 
 
 class IMDB(Env):
-    def __init__(self, times=1):
+    def __init__(self, times=1, rng=1):
         self.X = scipy.sparse.load_npz('./data/BoW.npz').toarray()  # [:1000]
         self.target = np.loadtxt('./data/target.csv', delimiter=',')  # [:1000]
         self.lam = 0
@@ -38,6 +38,7 @@ class IMDB(Env):
 
     def restart(self):
         self.t = 0
+        self.seed(self.rng)
 
     def done(self):
         return self.t >= self.max_T
@@ -47,7 +48,8 @@ class IMDB(Env):
                 "name": "IMDBLogistic",
                 "beta_best": str(self.beta_best),
                 "T": self.max_T,
-                "lambda": self.lam
+                "lambda": self.lam,
+                "rng": self.rng
                 }
 
 
