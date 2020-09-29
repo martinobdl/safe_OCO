@@ -61,21 +61,28 @@ class SafeIMDB(IMDB):
         x = self.X[idx, :]
         y = self.target[idx]
         H = prediction["x_t"]
+        H_LR = prediction["x_LR"]
 
         y_hat = utils.logit(np.dot(H, x))
         y_best = utils.logit(np.dot(self.beta_best, x))
         y_def = utils.logit(np.dot(self.beta_def, x))
+        y_LR = utils.logit(np.dot(H_LR, x))
 
         def loss_fnc(p):
             return -y*np.log(p) - (1-y)*np.log(1-p)
 
+        def grad_fnc(p):
+            return x*(-y*(1-p)+(1-y)*p)
+
         loss_t = np.array([loss_fnc(y_hat) + self.lam/2 * np.linalg.norm(H)**2 / self.max_T])
-        grad_t = x*(-y*(1-y_hat)+(1-y)*y_hat)
+        grad_t = grad_fnc(y_LR)
+        best_loss_t = np.array([loss_fnc(y_best)+self.lam/2*np.linalg.norm(self.beta_best)**2/self.max_T])
+        loss_def_t = np.array([loss_fnc(y_def)+self.lam/2*np.linalg.norm(self.beta_def)**2/self.max_T])
 
         feedback = {
                     "recc_t": self.beta_def,
-                    "loss_def_t": np.array([loss_fnc(y_def)+self.lam/2*np.linalg.norm(self.beta_def)**2/self.max_T]),
-                    "best_loss_t": np.array([loss_fnc(y_best)+self.lam/2*np.linalg.norm(self.beta_best)**2/self.max_T]),
+                    "loss_def_t": loss_def_t,
+                    "best_loss_t": best_loss_t,
                     "loss_t": loss_t,
                     "grad_t": grad_t
                     }
