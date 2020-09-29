@@ -24,6 +24,8 @@ class Experiment:
         prediction["x_t"] = x_t
         count = 0
         while not self.env.done():
+            if "x_LR" not in prediction.keys():
+                prediction["x_LR"] = prediction["x_t"]
             feedback = self.env.step(prediction)
             prediction = self.algo(feedback)
             z = {**feedback, **prediction}
@@ -33,7 +35,7 @@ class Experiment:
 
     def add_to_history(self, dictionary):
         for d in dictionary.keys():
-            if d in ["beta","loss_t","loss_def_t","best_loss_t"]:
+            if d in ["beta", "loss_t", "loss_def_t", "best_loss_t"]:
                 if d not in self.history.keys():
                     self.history[d] = np.array([[]])
                 axis = int(self.history[d].shape == (1, 0))

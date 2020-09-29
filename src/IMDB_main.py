@@ -21,17 +21,17 @@ if __name__ == "__main__":
     D = (n*c*2)**0.5
     K_0 = D/G/2**0.5
 
-    env = SafeIMDB(times=2)
+    env = SafeIMDB(times=4)
 
-    check_point = 10
-    folder = "experiments/IMDB"
+    check_point = 1
+    folder = "experiments/IMDB_test"
 
     base = OGD(x0, K_0, projection=None)
-    algo = DPOGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u, projection=None)
-    algo_naive = COGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u, projection=None)
+    algo_dp = DPOGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u, projection=None)
+    algo_c = COGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u, projection=None)
 
     print("running DPOGD")
-    exp = Experiment(algo, env, check_point=check_point)
+    exp = Experiment(algo_dp, env, check_point=check_point)
     exp.run()
     exp.save(folder=folder)
 
@@ -41,11 +41,14 @@ if __name__ == "__main__":
     exp2.save(folder=folder)
 
     print("running COGD")
-    exp3 = Experiment(algo_naive, env, check_point=check_point)
+    exp3 = Experiment(algo_c, env, check_point=check_point)
     exp3.run()
     exp3.save(folder=folder)
 
-    print("accuracy DPOGD: ", utils.accuracy(env, algo.x_t))
-    print("accuracy COGD: ", utils.accuracy(env, algo_naive.x_t))
-    print("accuracy OGD: ", utils.accuracy(env, base.x_t))
+    print("accuracy DPOGD: ", utils.accuracy(env, algo_dp.x_t))
+    print("accuracy COGD: ", utils.accuracy(env, algo_c.x_t))
+    print("accuracy DPOGD base: ", utils.accuracy(env, algo_dp.base.x_t))
+    print("accuracy COGD base: ", utils.accuracy(env, algo_c.base.x_t))
+    # print("accuracy OGD: ", utils.accuracy(env, base.x_t))
+    print("accuracy def: ", utils.accuracy(env, env.beta_def))
     print("accuracy best :", utils.accuracy(env, env.beta_best))

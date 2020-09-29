@@ -29,7 +29,7 @@ class SafeStrategy:
         self.e_u = e_u
         self.restart()
         self.alpha = alpha
-        self.Ca = min(self.G*self.D - self.alpha*self.e_l, e_u - (1+alpha)*e_l)
+        self.Ca = min(self.G*self.D, self.e_u - self.e_l) - self.alpha*self.e_l
         self.name = "SafeStrategy"
 
     def __call__(self, feedback):
@@ -53,6 +53,7 @@ class SafeStrategy:
         self.x_t = x_t1
         prediction = {}
         prediction["x_t"] = x_t1
+        prediction["x_LR"] = x_LR
         prediction["beta"] = beta
         return prediction
 
@@ -86,10 +87,3 @@ class SafeStrategyHybrid(SafeStrategy):
         self.Loss += feedback["loss_t"]
         self.Loss_def += feedback["loss_def_t"]
         return max(np.array([0]), 1+(self.Loss - self.Loss_def*(1+self.alpha)-self.alpha*self.e_l)/(self.G*self.D))
-
-    def restart(self):
-        self.t = 0
-        self.base.restart()
-        self.x_t = self.base.x0
-        self.Loss = 0
-        self.Loss_def = 0
