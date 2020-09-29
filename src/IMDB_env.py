@@ -5,7 +5,8 @@ import utils
 
 
 class IMDB(Env):
-    def __init__(self, times=1, rng=1):
+    def __init__(self, times=1, rnd=1):
+        self.rnd = rnd
         self.X = scipy.sparse.load_npz('./data/BoW.npz').toarray()  # [:1000]
         self.target = np.loadtxt('./data/target.csv', delimiter=',')  # [:1000]
         self.lam = 0
@@ -38,7 +39,7 @@ class IMDB(Env):
 
     def restart(self):
         self.t = 0
-        self.seed(self.rng)
+        self.seed()
 
     def done(self):
         return self.t >= self.max_T
@@ -49,13 +50,13 @@ class IMDB(Env):
                 "beta_best": str(self.beta_best),
                 "T": self.max_T,
                 "lambda": self.lam,
-                "rng": self.rng
+                "rnd": self.rnd
                 }
 
 
 class SafeIMDB(IMDB):
-    def __init__(self, times=1):
-        super().__init__(times)
+    def __init__(self, times=1, rnd=1):
+        super().__init__(times, rnd)
         self.beta_def = np.load('./data/beta_logistic_IMDB_weak.npy')[0]
 
     def step(self, prediction):

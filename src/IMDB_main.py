@@ -22,10 +22,12 @@ if __name__ == "__main__":
     D = (n*c*2)**0.5
     K_0 = D/G/2**0.5
 
-    env = SafeIMDB(times=10)
+    rnd = 1
 
-    check_point = 1
-    folder = "experiments/IMDB"
+    env = SafeIMDB(times=4, rnd=rnd)
+
+    check_point = 10
+    folder = "experiments/IMDB_test"
 
     base = OGD(x0, K_0, projection=None)
     algo_dp = DPOGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u, projection=None)
