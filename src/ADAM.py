@@ -34,8 +34,8 @@ class ADAM(Strategy):
     def to_dict(self):
         return {
                 "name": "ADAM",
-                "beta_1": self.beta1,
-                "beta2": self.beta2,
+                "beta_1": self.beta_1,
+                "beta2": self.beta_2,
                 "alpha": self.alpha,
                 "eps": self.eps,
                 "x0": str(self.x0)
