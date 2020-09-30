@@ -1,4 +1,22 @@
 import numpy as np
+import bootstrapped.bootstrap as bs
+import bootstrapped.stats_functions as bs_stats
+
+
+def compute_mean_and_CI_bstr_vector(list_of_samples_per_seed, alpha=0.05):
+    V, LB, UB = [], [], []
+    samples = np.array(list_of_samples_per_seed).T
+    for sample in samples:
+        v, lb, ub = compute_mean_and_CI_bstr(sample, alpha)
+        V.append(v)
+        LB.append(lb)
+        UB.append(ub)
+    return np.array(V), np.array(LB), np.array(UB)
+
+
+def compute_mean_and_CI_bstr(samples, alpha=0.05):
+    bsr = bs.bootstrap(samples, stat_func=bs_stats.mean, alpha=alpha, num_iterations=1000)
+    return (bsr.value, bsr.lower_bound, bsr.upper_bound)
 
 
 def logit(x):
