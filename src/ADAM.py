@@ -20,7 +20,7 @@ class ADAM(Strategy):
         self.v_t = self.beta_2 * self.v_t + (1 - self.beta_2) * (g_t*g_t)
         hat_m_t = self.m_t / (1 - self.beta_1**self.t)
         hat_v_t = self.v_t / (1 - self.beta_2**self.t)
-        self.x_t = self.x_t - self.alpha * hat_m_t / (hat_v_t ** 0.5 + self.eps)
+        self.x_t = self.x_t - self.alpha/self.t**0.5 * hat_m_t / (hat_v_t ** 0.5 + self.eps)
         prediction = {}
         prediction["x_t"] = self.x_t
         return prediction
