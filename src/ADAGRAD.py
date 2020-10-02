@@ -15,8 +15,8 @@ class ADAGRAD(Strategy):
     def _forward(self, feedback):
         self.t += 1
         g_t = feedback["grad_t"]
-        self.v += np.sqrt(g_t**2)
-        self.x_t = self.x_t - self.alpha * g_t/(self.v + self.eps)
+        self.V += g_t**2
+        self.x_t = self.x_t - self.alpha * g_t/(self.V + self.eps)**0.5
         prediction = {}
         prediction["x_t"] = self.x_t
         return prediction
@@ -24,13 +24,11 @@ class ADAGRAD(Strategy):
     def restart(self):
         self.x_t = self.x0
         self.t = 0
-        self.v = np.zeros(shape=n)
+        self.V = np.zeros(shape=n)
 
     def to_dict(self):
         return {
                 "name": "ADAGRAD",
-                "beta_1": self.beta_1,
-                "beta2": self.beta_2,
                 "alpha": self.alpha,
                 "eps": self.eps,
                 "x0": str(self.x0)
