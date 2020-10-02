@@ -28,7 +28,7 @@ class ADAGRAD(Strategy):
 
     def to_dict(self):
         return {
-                "name": "ADAM",
+                "name": "ADAGRAD",
                 "beta_1": self.beta_1,
                 "beta2": self.beta_2,
                 "alpha": self.alpha,
