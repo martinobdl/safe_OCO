@@ -3,20 +3,31 @@ import bootstrapped.bootstrap as bs
 import bootstrapped.stats_functions as bs_stats
 
 
-def compute_mean_and_CI_bstr_vector(list_of_samples_per_seed, alpha=0.05):
+def compute_mean_and_CI_bstr_vector(list_of_samples_per_seed, alpha=0.05, speed=1):
     V, LB, UB = [], [], []
     samples = np.array(list_of_samples_per_seed).T
     for sample in samples:
-        v, lb, ub = compute_mean_and_CI_bstr(sample, alpha)
+        v, lb, ub = compute_mean_and_CI_bstr(sample, alpha, speed)
         V.append(v)
         LB.append(lb)
         UB.append(ub)
     return np.array(V), np.array(LB), np.array(UB)
 
 
-def compute_mean_and_CI_bstr(samples, alpha=0.05):
-    bsr = bs.bootstrap(samples, stat_func=bs_stats.mean, alpha=alpha, num_iterations=1000)
-    return (bsr.value, bsr.lower_bound, bsr.upper_bound)
+def compute_mean_and_CI_bstr(samples, alpha=0.05, speed=1):
+    assert speed in [1, 2, 3], "Speed must be between 1 and 3. 1 being slow and 1 very fast."
+    if speed == 1:
+        it = 10000
+    elif speed == 2:
+        it = 1000
+    else:
+        it = None
+
+    if it is not None:
+        bsr = bs.bootstrap(samples, stat_func=bs_stats.mean, alpha=alpha, num_iterations=it)
+        return (bsr.value, bsr.lower_bound, bsr.upper_bound)
+    else:
+        return (np.mean(samples), 0, 0)
 
 
 def logit(x):
