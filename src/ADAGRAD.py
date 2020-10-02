@@ -3,7 +3,7 @@ from strategy import Strategy
 
 class ADAGRAD(Strategy):
 
-    def __init__(self, x0, alpha=0.001):
+    def __init__(self, x0, alpha=1):
         super().__init__()
         self.x0 = x0
         self.n = len(x0)
