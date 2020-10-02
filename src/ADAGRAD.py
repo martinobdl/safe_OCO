@@ -1,4 +1,5 @@
 from strategy import Strategy
+import numpy as np
 
 
 class ADAGRAD(Strategy):
@@ -24,7 +25,7 @@ class ADAGRAD(Strategy):
     def restart(self):
         self.x_t = self.x0
         self.t = 0
-        self.V = np.zeros(shape=n)
+        self.V = np.zeros(shape=self.n)
 
     def to_dict(self):
         return {
@@ -37,7 +38,6 @@ class ADAGRAD(Strategy):
 
 if __name__ == "__main__":
 
-    import numpy as np
     # from linear_regression import OLR
     from IMDB_env import IMDB
     from experiment import Experiment
