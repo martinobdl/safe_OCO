@@ -86,7 +86,8 @@ class SafeStrategyHybrid(SafeStrategy):
     def b(self, feedback):
         self.Loss += feedback["loss_t"]
         self.Loss_def += feedback["loss_def_t"]
-        return max(np.array([0]), 1+(self.Loss - self.Loss_def*(1+self.alpha)-self.alpha*self.e_l)/(self.G*self.D))
+        return min(np.array([1]),
+                   max(np.array([0]), 1+(self.Loss - self.Loss_def*(1+self.alpha)-self.alpha*self.e_l)/(self.G*self.D)))
 
 
 class SafeStrategyHybrid2(SafeStrategy):
