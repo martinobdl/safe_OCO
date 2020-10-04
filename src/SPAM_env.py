@@ -69,7 +69,10 @@ class SafeSPAM(SPAM):
         x = self.X[idx, :]
         y = self.target[idx]
         H = prediction["x_t"]
-        H_LR = prediction["x_LR"]
+        if "x_LR" in prediction.keys():
+            H_LR = prediction["x_LR"]
+        else:
+            H_LR = prediction["x_t"]
 
         y_hat = utils.logit(np.dot(H, x))
         y_best = utils.logit(np.dot(self.beta_best, x))
