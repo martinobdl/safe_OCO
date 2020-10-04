@@ -39,6 +39,12 @@ class SPAM(Env):
     def restart(self):
         self.t = 0
         self.seed()
+        feedback = {
+                    "best_loss_t": 0,
+                    "loss_t": 0,
+                    "grad_t": 0,
+                    }
+        return feedback
 
     def done(self):
         return self.t >= self.max_T
@@ -101,9 +107,21 @@ class SafeSPAM(SPAM):
                 "lambda": self.lam
                 }
 
+    def restart(self):
+        self.t = 0
+        self.seed()
+        feedback = {
+                    "recc_t": self.beta_def,
+                    "loss_def_t": 0,
+                    "best_loss_t": 0,
+                    "loss_t": 0,
+                    "grad_t": 0
+                    }
+        return feedback
+
 
 if __name__ == "__main__":
-    from ADAGRAD import ADAGRAD
+    from DPOGD import DPOGD
     from experiment import Experiment
 
     n = 57
@@ -114,14 +132,15 @@ if __name__ == "__main__":
     nk = n
     c = 2
     e_u = nk*c
-    G = nk**0.5
+    G = (nk)**0.5*1700
     D = (n*c*2)**0.5
     K_0 = D/G/2**0.5
 
-    env = SafeSPAM(times=5)
-    algo = ADAGRAD(x0)
-    exp = Experiment(algo, env)
+    env = SafeSPAM(times=50)
+    algo = DPOGD(x0, K_0, alpha, G, D, e_l, e_u, projection=None)
+    exp = Experiment(algo, env, check_point=10000000)
     exp.run()
 
     print("accuracy algo: ", utils.accuracy(env, algo.x_t))
+    print("accuracy algo: ", utils.accuracy(env, algo.base.x_t))
     print("accuracy best :", utils.accuracy(env, env.beta_best))

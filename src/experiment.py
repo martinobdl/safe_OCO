@@ -16,18 +16,14 @@ class Experiment:
 
     def restart(self):
         self.algo.restart()
-        self.env.restart()
+        feedback = self.env.restart()
+        return feedback
 
     def run(self):
-        self.restart()
-        x_t = self.algo.x_t
-        prediction = {}
-        prediction["x_t"] = x_t
+        feedback = self.restart()
+        prediction = self.algo(feedback)
         count = 0
-        # while not self.env.done():
         for _ in tqdm(range(self.env.max_T)):
-            if "x_LR" not in prediction.keys():
-                prediction["x_LR"] = prediction["x_t"]
             feedback = self.env.step(prediction)
             prediction = self.algo(feedback)
             z = {**feedback, **prediction}

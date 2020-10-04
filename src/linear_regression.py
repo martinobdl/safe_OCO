@@ -43,6 +43,13 @@ class OLR(Env):
         self.t = 0
         self.x = np.random.uniform(size=self.n_feature)
         self.x[0] = 1
+        feedback = {
+                    "best_loss_t": 0,
+                    "featureres_t": 0,
+                    "loss_t": 0,
+                    "grad_t": 0
+                    }
+        return feedback
 
     def done(self):
         return self.t >= self.max_T
@@ -88,6 +95,20 @@ class SafeOLR(OLR):
                     }
         self.t += 1
 
+        return feedback
+
+    def restart(self):
+        self.t = 0
+        self.x = np.random.uniform(size=self.n_feature)
+        self.x[0] = 1
+        feedback = {
+                    "best_loss_t": 0,
+                    "recc_t": self.safe_strategy.x_t,
+                    "featureres_t": 0,
+                    "loss_t": 0,
+                    "grad_t": 0,
+                    "loss_def_t": 0
+                    }
         return feedback
 
     def to_dict(self):

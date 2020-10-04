@@ -8,9 +8,9 @@ class IMDB(Env):
     def __init__(self, times=1, rnd=1):
         self.rnd = rnd
         self.X = scipy.sparse.load_npz('./data/BoW.npz').toarray()  # [:1000]
-        self.target = np.loadtxt('./data/target.csv', delimiter=',')  # [:1000]
+        self.target = np.loadtxt('./data/IMDB_target.csv', delimiter=',')  # [:1000]
         self.lam = 0
-        self.beta_best = np.load('./data/beta_logistic_IMDB_best.npy')[0]
+        self.beta_best = np.load('./data/beta_logistic_IMDB_best2.npy')
         self.max_T = self.X.shape[0]*times
 
     def step(self, prediction):
@@ -40,6 +40,12 @@ class IMDB(Env):
     def restart(self):
         self.t = 0
         self.seed()
+        feedback = {
+                    "best_loss_t": 0,
+                    "loss_t": 0,
+                    "grad_t": 0
+                    }
+        return feedback
 
     def done(self):
         return self.t >= self.max_T
@@ -91,6 +97,18 @@ class SafeIMDB(IMDB):
                     }
         self.t += 1
 
+        return feedback
+
+    def restart(self):
+        self.t = 0
+        self.seed()
+        feedback = {
+                    "recc_t": self.beta_def,
+                    "loss_def_t": 0,
+                    "best_loss_t": 0,
+                    "loss_t": 0,
+                    "grad_t": 0
+                    }
         return feedback
 
     def to_dict(self):
