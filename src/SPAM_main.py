@@ -19,16 +19,16 @@ if __name__ == "__main__":
     e_l = 1e-4
     nk = n
     c = 2
-    e_u = 10
-    G = nk**0.5
+    e_u = 100000
+    G = nk**0.5*1700
     D = (n*c*2)**0.5
     K_0 = D/G/2**0.5
 
     rnd = 1
 
-    env = SafeSPAM(times=100, rnd=rnd)
+    env = SafeSPAM(times=1000, rnd=rnd)
 
-    check_point = 1
+    check_point = 10
     folder = "experiments/SPAM"
 
     base = OGD(x0, K_0, projection=None)

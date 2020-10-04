@@ -131,15 +131,15 @@ if __name__ == "__main__":
     x0 = np.ones(n)/n
 
     alpha = 0.01
-    e_l = 0
+    e_l = 0+1e-4
     nk = n
     c = 2
-    e_u = nk*c
+    e_u = 10  # nk*c
     G = (nk)**0.5*1700
     D = (n*c*2)**0.5
     K_0 = D/G/2**0.5
 
-    env = SafeSPAM(times=50)
+    env = SafeSPAM(times=500)
     algo = DPOGD(x0, K_0, alpha, G, D, e_l, e_u, projection=None)
     exp = Experiment(algo, env, check_point=10000000)
     exp.run()
