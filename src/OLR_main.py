@@ -2,6 +2,7 @@ from OGD import OGD
 from COGD import COGD
 from DPOGD import DPOGD
 from DPOGDMAX import DPOGDMAX
+from ADAGRAD import ADAGRAD
 from experiment import Experiment
 from linear_regression import SafeOLR
 from constant_uniform import ConstantStrategy
@@ -45,6 +46,7 @@ if __name__ == "__main__":
     dpogd = DPOGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
     dpogdmax = DPOGDMAX(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
     cogd = COGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
+    adagrad = ADAGRAD(x0=x0)
     env = SafeOLR(baseline, n, max_T=100000, beta=beta, rnd=seed)
 
     # exp = Experiment(dpogd, env, check_point=check_point)
@@ -59,6 +61,10 @@ if __name__ == "__main__":
     # exp3.run()
     # exp3.save(folder=folder)
 
-    exp4 = Experiment(dpogdmax, env, check_point=check_point)
-    exp4.run()
-    exp4.save(folder=folder)
+    # exp4 = Experiment(dpogdmax, env, check_point=check_point)
+    # exp4.run()
+    # exp4.save(folder=folder)
+
+    exp5 = Experiment(adagrad, env, check_point=check_point)
+    exp5.run()
+    exp5.save(folder=folder)
