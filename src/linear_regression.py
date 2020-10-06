@@ -83,8 +83,8 @@ class SafeOLR(OLR):
         loss_t = np.array([(y_t-y_t_hat)**2])
         grad_t = 2*np.array([y_t_hat - y_t])*self.x
 
-        recc_t = self.safe_strategy(self.feedback)['x_t'] if self.feedback is not None else self.safe_strategy.x_t
-        loss_def_t = np.array([(y_t-np.dot(recc_t, self.x))**2])
+        recc_t = self.safe_strategy.x_t
+        loss_def_t = np.array([(y_t - np.dot(recc_t, self.x))**2])
         feedback = {
                     "best_loss_t": np.array([noise**2]),
                     "recc_t": recc_t,
@@ -125,4 +125,32 @@ class SafeOLR(OLR):
 
 
 if __name__ == "__main__":
-    pass
+    from OGD import OGD
+    from DPOGD import DPOGD
+    from COGD import COGD
+    from experiment import Experiment
+    from constant_uniform import ConstantStrategy
+
+    n = 10000
+    x0 = np.ones(n)/n
+
+    alpha = 0.01
+    e_l = 0
+    nk = 1100
+    c = 2
+    e_u = nk*c
+    G = nk**0.5
+    D = (n*c*2)**0.5
+    K_0 = D/G/2**0.5
+
+    x0 = np.ones(n)/n
+    tmp = np.random.uniform(size=n)
+    baselinex0 = tmp/np.sum(tmp)
+    baseline = ConstantStrategy(x0=baselinex0)
+
+    algo = OGD(x0, K_0)
+    algo2 = COGD(x0, K_0, alpha, G, D, e_l, e_u)
+    algo3 = DPOGD(x0, K_0, alpha, G, D, e_l, e_u)
+    env = SafeOLR(baseline, n)
+    exp = Experiment(algo3, env)
+    exp.run()
