@@ -3,21 +3,30 @@ import bootstrapped.bootstrap as bs
 import bootstrapped.stats_functions as bs_stats
 
 
-def compute_mean_and_CI_bstr_vector(list_of_samples_per_seed, alpha=0.05, speed=1):
+def range_to_idx(array):
+    return np.sort(np.array(list(set(np.round(array)))).astype('int'))
+
+
+def compute_mean_and_CI_bstr_vector(T, list_of_samples_per_seed, idx=None, alpha=0.05, speed=1):
     V, LB, UB = [], [], []
     samples = np.array(list_of_samples_per_seed).T
+    if idx is not None:
+        idx = range_to_idx(idx)
+        T = T[idx]
+        samples = samples[idx]
+
     for sample in samples:
         v, lb, ub = compute_mean_and_CI_bstr(sample, alpha, speed)
         V.append(v)
         LB.append(lb)
         UB.append(ub)
-    return np.array(V), np.array(LB), np.array(UB)
+    return T, np.array(V), np.array(LB), np.array(UB)
 
 
 def compute_mean_and_CI_bstr(samples, alpha=0.05, speed=1):
     assert speed in [1, 2, 3], "Speed must be between 1 and 3. 1 being slow and 1 very fast."
     if speed == 1:
-        it = 10000
+        it = 3700
     elif speed == 2:
         it = 1000
     else:

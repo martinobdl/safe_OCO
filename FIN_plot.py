@@ -1,16 +1,15 @@
 import yaml
+import tikzplotlib
 import glob
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-import src.utils as utils
-import tikzplotlib
 
 
 DP = []
 C = []
 OGD = []
-R = {}
+W = {}
 B = {}
 L = {}
 beta = {}
@@ -20,57 +19,65 @@ colors = {
         'DPOGD': 'green',
         'COGD': 'orange',
         'ADAM': 'black',
-        'DPOGDMAX': 'cyan',
-        'ADAGRAD': 'blue'
         }
 
-for yaml_file in glob.glob('experiments/SPAM/*.yaml'):
+for yaml_file in glob.glob('experiments/FIN/*.yaml'):
+
     with open(yaml_file, 'r') as f:
         d = dict(yaml.load(f, Loader=yaml.FullLoader))
-    if d['algo']['name'] == 'ADAM' and abs(d['algo']['alpha'] - 0.001) < 1e-3:
-        pass
-    else:
+
+    if d['algo']['name'] != 'DPOGDMAX':
         base_np = os.path.splitext(os.path.basename(yaml_file))[0]+'.npz'
         np_file = os.path.join(os.path.dirname(yaml_file), base_np)
         data = dict(np.load(np_file))
 
         L_t = np.cumsum(data['loss_t'])
         L_def_t = np.cumsum(data['loss_def_t'])
-        L_best = np.cumsum(data['best_loss_t'])
-        alpha = 0.01
+        # L_best = np.cumsum(data['best_loss_t'])
+        b = 0.80
+        u = 1.04
+        ll = 0.96
+        e_u = float(np.log(u)-np.log(ll))
+        alpha = float(b/(43140*e_u))
+        print(b)
         bdg = (1 + alpha)*L_def_t - L_t
-        R_t = L_t - L_best
-        R[d['algo']['name']] = R_t
-        B[d['algo']['name']] = bdg
+        t = np.arange(1, len(L_t)+1)
+        K = -np.log(ll)
+        W_t = np.exp(-L_t+K*t)
+        D2 = np.exp(-L_def_t+K*t)
+        W[d['algo']['name']] = W_t
+        B[d['algo']['name']] = W_t-D2*b
         L[d['algo']['name']] = L_t
+        D = D2*b
         if d['algo']['name'] in ['COGD', 'DPOGD', 'DPOGDMAX']:
             beta[d['algo']['name']] = data['beta']
 
 plt.figure()
-for k in R.keys():
-    T = np.arange(1, len(R[k])+1)*d['checkpoints']
-    idx = utils.range_to_idx(np.arange(1, len(T), 1000))
+for k in W.keys():
+    T = np.arange(1, len(W[k])+1)*d['checkpoints']
+    idx = np.arange(1, len(T)+1, 100)
     T = T[idx]
-    plt.plot(T, R[k][idx], label=k, color=colors[k])
+    plt.plot(T, W[k][idx], label=k, color=colors[k])
+# plt.plot(T, D, label='def*b', color='blue')
+# plt.plot(T, D2, label='def', color='magenta')
 plt.legend()
-plt.grid(True)
-plt.title('Regret')
+# plt.grid(True)
+# plt.title('W')
 plt.show(block=False)
 
-tikzplotlib.save("teximgs/SPAM_regret.tex")
+tikzplotlib.save("teximgs/FIN_wealth.tex")
 
 plt.figure()
 for k in B.keys():
     T = np.arange(len(B[k]))*d['checkpoints']
-    idx = utils.range_to_idx(np.arange(1, len(T)/4, 1000))
     T = T[idx]
     plt.plot(T, B[k][idx], label=k, color=colors[k])
 plt.legend()
-plt.grid(True)
+# plt.grid(True)
 plt.title('bdgt')
 plt.show(block=False)
 
-tikzplotlib.save("teximgs/SPAM_bdgt.tex")
+tikzplotlib.save("teximgs/FIN_budget.tex")
 
 plt.figure()
 for k in beta.keys():

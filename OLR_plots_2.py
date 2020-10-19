@@ -5,7 +5,9 @@ import os
 import matplotlib.pyplot as plt
 from collections import defaultdict
 from src import utils
+import tikzplotlib
 
+# Budget
 
 DP = []
 C = []
@@ -15,10 +17,12 @@ D = defaultdict(lambda: [])
 colors = {
         'OGD': 'red',
         'DPOGD': 'green',
-        'COGD': 'orange'
+        'COGD': 'orange',
+        'DPOGDMAX': 'cyan',
+        'ADAGRAD': 'blue'
         }
 
-for yaml_file in glob.glob('experiments/OLR/*.yaml'):
+for yaml_file in glob.glob('experiments/OLR_2/*.yaml'):
     with open(yaml_file, 'r') as f:
         d = dict(yaml.load(f, Loader=yaml.FullLoader))
 
@@ -32,21 +36,23 @@ for yaml_file in glob.glob('experiments/OLR/*.yaml'):
 
     L_t = np.cumsum(data['loss_t'])
     L_def_t = np.cumsum(data['loss_def_t'])
-    alpha = 0.05
+    alpha = 0.01
     bdg = (1 + alpha)*L_def_t - L_t
-    if abs(D_tilde - 0.3) < 1e-3:
-        D[d['algo']['name']].append(bdg)
+    name = d['algo']['name']
+    if abs(D_tilde - 0.3) < 1e-3 and name != "DPOGDMAX":
+        D[name].append(bdg)
 
 
 plt.figure()
 for k in D.keys():
-    Y = np.zeros_like(D[k][0])
-    it = 0
-    for y in D[k]:
-        it += 1
-        Y += np.array(y)
-    Y = Y/it
-    plt.plot(np.arange(len(Y))*d['checkpoints'], Y, label=k, color=colors[k])
+    T = np.arange(len(D[k][0]))*d['checkpoints']
+    idx = np.arange(0, len(T), 10)
+    # idx = np.arange(0, len(T)/10, 1)
+    T, Y, LB, UB = utils.compute_mean_and_CI_bstr_vector(T, D[k], idx=idx, speed=1)
+    plt.plot(T, Y, label=k, color=colors[k])
+    plt.fill_between(T, LB, UB, alpha=0.2, color=colors[k])
 plt.legend()
-plt.grid(True)
+plt.xlabel(r"$time$")
+plt.ylabel(r"$R_t$")
+tikzplotlib.save("teximgs/OLR_bdgt.tex")
 plt.show()

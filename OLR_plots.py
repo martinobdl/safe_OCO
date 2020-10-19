@@ -44,12 +44,20 @@ for yaml_file in glob.glob('experiments/OLR/*.yaml'):
 def sort_and_plot(d, label):
     x = []
     y = []
+    lb = []
+    ub = []
     for k, v in d.items():
         x.append(k)
-        y.append(np.mean(v))
+        y_m, l_m, u_m = utils.compute_mean_and_CI_bstr(np.array(v))
+        y.append(y_m)
+        lb.append(l_m)
+        ub.append(u_m)
     y = [t for _, t in sorted(zip(x, y))]
+    lb = [t for _, t in sorted(zip(x, lb))]
+    ub = [t for _, t in sorted(zip(x, ub))]
     x.sort()
     plt.plot(x, y, '*-', label=label)
+    plt.fill_between(x, lb, ub, alpha=0.2)
 
 
 plt.figure()

@@ -8,19 +8,10 @@ from collections import defaultdict
 import matplotlib.cm as cm
 import tikzplotlib
 
-cmap = cm.tab20b
+cmap = cm.plasma
 
 DPOGD = defaultdict(lambda: [])
-OGD = defaultdict(lambda: [])
-DPOGD1 = []
-DPOGD2 = []
-DPOGD3 = []
-DPOGDMAX1 = []
-DPOGDMAX2 = []
-DPOGDMAX3 = []
-OGD1 = []
-OGD2 = []
-OGD3 = []
+ADAGRAD = defaultdict(lambda: [])
 
 colors = {
         'OGD': 'red',
@@ -42,14 +33,14 @@ for yaml_file in glob.glob('experiments/OLR/*.yaml'):
 
     L_t = np.cumsum(data['loss_t'])
     L_best_t = np.cumsum(data['best_loss_t'])
-    if d['algo']['name'] == 'OGD':
-        OGD[D_tilde].append(L_t)
+    if d['algo']['name'] == 'ADAGRAD':
+        ADAGRAD[D_tilde].append(L_t)
     if d['algo']['name'] == 'DPOGD':
         DPOGD[D_tilde].append(L_t)
 
 D = defaultdict(lambda: [])
-for k in OGD.keys():
-    for j1, j2 in zip(OGD[k], DPOGD[k]):
+for k in ADAGRAD.keys():
+    for j1, j2 in zip(ADAGRAD[k], DPOGD[k]):
         D[k].append(j2-j1)
 
 
@@ -60,15 +51,13 @@ def color(D_tilde):
 plt.figure()
 for k in range(1, 13)[::-1]:
     k = np.round(k/10, 1)
-    T = np.arange(len(D[k][0]))*d['checkpoints']
-    idx = np.arange(0, len(T), 100)
+    T = np.arange(len(D[k][0])/100)*d['checkpoints']
+    idx = np.arange(0, len(T), 1)
     T, Y, LB, UB = utils.compute_mean_and_CI_bstr_vector(T, D[k], idx=idx, speed=1)
-    plt.plot(T, Y, label=r"$\tilde D={}$".format(k), color=color(k))
+    plt.plot(T, Y, '*', color=color(k), label=r"$\tilde{D}="+str(k)+"$")
     plt.fill_between(T, LB, UB, alpha=0.2, color=color(k))
 plt.legend()
-plt.ylabel(r'$L_t(DPOGD, ODG)$')
-plt.xlabel(r'$t$')
+plt.ylabel(r'$L_t(DPOGD, AdaGrad)$')
 # plt.grid(True)
-
-tikzplotlib.save("teximgs/OLR_D.tex")
+tikzplotlib.save("teximgs/OLR_dp_vs_adagrad_zoomed.tex")
 plt.show()
