@@ -24,6 +24,8 @@ class Experiment:
         prediction = self.algo(feedback)
         count = 0
         for _ in tqdm(range(self.env.max_T)):
+            if "x_LR" not in prediction:
+                prediction["x_LR"] = prediction["x_t"]
             feedback = self.env.step(prediction)
             prediction = self.algo(feedback)
             z = {**feedback, **prediction}

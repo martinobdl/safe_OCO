@@ -1,12 +1,8 @@
 from OGD import OGD
 from COGD import COGD
 from DPOGD import DPOGD
-from DPOGDMAX import DPOGDMAX
-from ADAGRAD import ADAGRAD
 from experiment import Experiment
 from finance_env import GBM_safe
-import utils
-import time
 
 
 if __name__ == "__main__":
@@ -27,7 +23,6 @@ if __name__ == "__main__":
     e_u = float(np.log(u)-np.log(ll))
     folder = "experiments/FIN"
     alpha = float(beta/(T*e_u))
-    print(alpha)
 
     K_0 = D/G/2**0.5
 

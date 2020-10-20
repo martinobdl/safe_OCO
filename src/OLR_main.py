@@ -1,7 +1,6 @@
 from OGD import OGD
 from COGD import COGD
 from DPOGD import DPOGD
-from DPOGDMAX import DPOGDMAX
 from ADAGRAD import ADAGRAD
 from experiment import Experiment
 from linear_regression import SafeOLR
@@ -28,7 +27,7 @@ if __name__ == "__main__":
     Dtilde = args.D
     seed = args.seed
     assert Dtilde < min([2**0.5, 2**0.5*(1-min(beta)), 2**0.5*max(beta)])
-    print(Dtilde)
+    print("D_tilde = {}".format(Dtilde))
 
     baselinex0[np.argmax(beta)] -= Dtilde*(1/2)**0.5
     baselinex0[np.argmin(beta)] += Dtilde*(1/2)**0.5
@@ -42,29 +41,24 @@ if __name__ == "__main__":
 
     K_0 = D/G/2**0.5
 
-    base = OGD(x0, K_0)
+    ogd = OGD(x0, K_0)
     dpogd = DPOGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
-    dpogdmax = DPOGDMAX(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
     cogd = COGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
     adagrad = ADAGRAD(x0=x0)
     env = SafeOLR(baseline, n, max_T=100000, beta=beta, rnd=seed)
 
-    # exp = Experiment(dpogd, env, check_point=check_point)
-    # exp.run()
+    exp = Experiment(dpogd, env, check_point=check_point)
+    exp.run()
     # exp.save(folder=folder)
 
-    # exp2 = Experiment(base, env, check_point=check_point)
-    # exp2.run()
+    exp2 = Experiment(ogd, env, check_point=check_point)
+    exp2.run()
     # exp2.save(folder=folder)
 
-    # exp3 = Experiment(cogd, env, check_point=check_point)
-    # exp3.run()
+    exp3 = Experiment(cogd, env, check_point=check_point)
+    exp3.run()
     # exp3.save(folder=folder)
-
-    # exp4 = Experiment(dpogdmax, env, check_point=check_point)
-    # exp4.run()
-    # exp4.save(folder=folder)
 
     exp5 = Experiment(adagrad, env, check_point=check_point)
     exp5.run()
-    exp5.save(folder=folder)
+    # exp5.save(folder=folder)
