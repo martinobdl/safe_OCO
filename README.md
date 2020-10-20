@@ -2,6 +2,9 @@
 
 Code for the paper: Conservative Online Convex Optimization
 
+Submitted to: AISTATS 2021  
+Id: 873 
+
 ### Reqirements
  Install the requirements with:
 
@@ -18,7 +21,7 @@ The provided experimental environments are:
 * SpamBase
 * Online Portfolio Optimization
 
-They can be run with the following command:
+Sample experiments can be run with the following commands:
 
 `
 python3 src/OLR_main.py  

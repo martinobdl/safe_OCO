@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     rnd = 1
 
-    env = SafeIMDB(times=4, rnd=rnd)
+    env = SafeIMDB(times=1, rnd=rnd)
 
     check_point = 10
     folder = "experiments/IMDB_test"
