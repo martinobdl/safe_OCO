@@ -10,7 +10,7 @@ class IMDB(Env):
         self.X = scipy.sparse.load_npz('./data/BoW.npz').toarray()  # [:1000]
         self.target = np.loadtxt('./data/IMDB_target.csv', delimiter=',')  # [:1000]
         self.lam = 0
-        self.beta_best = np.load('./data/beta_logistic_IMDB_best.npy')
+        self.beta_best = np.load('./data/beta_logistic_IMDB_best.npy')[0]
         self.max_T = self.X.shape[0]*times
 
     def step(self, prediction):
