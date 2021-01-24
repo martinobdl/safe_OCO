@@ -3,6 +3,7 @@ from COGD import COGD
 from DPOGD import DPOGD
 from DPOGDMAX import DPOGDMAX
 from ADAGRAD import ADAGRAD
+from DPWrap import DPWRAP
 from experiment import Experiment
 from linear_regression import SafeOLR
 from constant_uniform import ConstantStrategy
@@ -12,7 +13,7 @@ import argparse
 if __name__ == "__main__":
     import numpy as np
 
-    beta = np.array([0.01, 0.01, 0.01, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.85])
+    beta = np.array([0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.91])
     baselinex0 = beta.copy()
     n = 10
     alpha = 0.01
@@ -38,15 +39,16 @@ if __name__ == "__main__":
     G = 2*((2*n)**0.5 + 0.1)*n**0.5
     e_l = 0.
     e_u = (2*n)**0.5 + 0.1
-    folder = "experiments/OLR"
+    folder = "experiments2/OLR"
 
     K_0 = D/G/2**0.5
 
     base = OGD(x0, K_0)
-    dpogd = DPOGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
-    dpogdmax = DPOGDMAX(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
-    cogd = COGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
-    adagrad = ADAGRAD(x0=x0)
+    # dpogd = DPOGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
+    # dpogdmax = DPOGDMAX(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
+    # cogd = COGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
+    # adagrad = ADAGRAD(x0=x0)
+    dpwrap = DPWRAP(base, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
     env = SafeOLR(baseline, n, max_T=100000, beta=beta, rnd=seed)
 
     # exp = Experiment(dpogd, env, check_point=check_point)
@@ -65,6 +67,10 @@ if __name__ == "__main__":
     # exp4.run()
     # exp4.save(folder=folder)
 
-    exp5 = Experiment(adagrad, env, check_point=check_point)
-    exp5.run()
-    exp5.save(folder=folder)
+    # exp5 = Experiment(adagrad, env, check_point=check_point)
+    # exp5.run()
+    # exp5.save(folder=folder)
+
+    exp = Experiment(dpwrap, env, check_point=check_point)
+    exp.run()
+    exp.save(folder=folder)

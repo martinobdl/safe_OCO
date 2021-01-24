@@ -9,6 +9,7 @@ class OGD(Strategy):
         self.beta_0 = beta_0
         self.x0 = x0
         self.projection = projection
+        self.name = 'OGD'
 
     def _forward(self, feedback):
         self.t += 1

@@ -47,6 +47,9 @@ class Experiment:
             name = ''.join(np.random.choice(list(ascii_letters), size=10))
             name = str(int(time.time()))
 
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+
         if os.path.isdir(folder):
             yaml_file = os.path.join(folder, name + ".yaml")
             data_file = os.path.join(folder, name + ".npz")
