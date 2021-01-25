@@ -1,11 +1,8 @@
 from OGD import OGD
-from COGD import COGD
-from DPOGD import DPOGD
-from DPOGDMAX import DPOGDMAX
-from ADAM import ADAM
 from ADAGRAD import ADAGRAD
 from experiment import Experiment
 from SPAM_env import SafeSPAM
+from DPWrap import DPWRAP
 import utils
 
 
@@ -26,20 +23,22 @@ if __name__ == "__main__":
 
     rnd = 1
 
-    env = SafeSPAM(times=1000, rnd=rnd)
+    env = SafeSPAM(times=100, rnd=rnd)
 
     check_point = 10
-    folder = "experiments/SPAM"
+    folder = "experiments2/SPAM"
 
     base = OGD(x0, K_0, projection=None)
-    algo_dp = DPOGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u, projection=None)
-    algo_c = COGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u, projection=None)
-    adam = ADAM(x0=x0, alpha=1)
+    # algo_dp = DPOGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u, projection=None)
+    # algo_c = COGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u, projection=None)
+    # adam = ADAM(x0=x0, alpha=1)
     adagrad = ADAGRAD(x0=x0)
-    dpogdmax = DPOGDMAX(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u, projection=None)
+    dpwrapogd = DPWRAP(base, alpha, G, D, e_l, e_u)
+    # dpogdmax = DPOGDMAX(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u, projection=None)
+    base = OGD(x0, K_0, projection=None)
 
-    print("running DPOGD")
-    exp = Experiment(algo_dp, env, check_point=check_point)
+    print("running DPwrap")
+    exp = Experiment(dpwrapogd, env, check_point=check_point)
     exp.run()
     exp.save(folder=folder)
 
@@ -47,11 +46,6 @@ if __name__ == "__main__":
     exp2 = Experiment(base, env, check_point=check_point)
     exp2.run()
     exp2.save(folder=folder)
-
-    print("running COGD")
-    exp3 = Experiment(algo_c, env, check_point=check_point)
-    exp3.run()
-    exp3.save(folder=folder)
 
     # print("running ADAM")
     # exp4 = Experiment(adam, env, check_point=check_point)
@@ -68,9 +62,7 @@ if __name__ == "__main__":
     exp6.run()
     exp6.save(folder=folder)
 
-    print("accuracy DPOGD: ", utils.accuracy(env, algo_dp.x_t))
-    print("accuracy COGD: ", utils.accuracy(env, algo_c.x_t))
-    print("accuracy OGD: ", utils.accuracy(env, base.x_t))
     print("accuracy ADAGRAD: ", utils.accuracy(env, adagrad.x_t))
+    print("accuracy wrap: ", utils.accuracy(env, dpwrapogd.x_t))
     print("accuracy def: ", utils.accuracy(env, env.beta_def))
     print("accuracy best :", utils.accuracy(env, env.beta_best))

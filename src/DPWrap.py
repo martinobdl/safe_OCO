@@ -67,6 +67,21 @@ class DPWRAP:
                 }
 
 
+class CWRAP(DPWRAP):
+
+    def __init__(self, base, alpha, G, D, e_l, e_u):
+        super().__init__(base, alpha, G, D, e_l, e_u)
+        self.name = "CWRAP_" + self.base.name
+
+    def b(self, feedback):
+        self.Loss += feedback["loss_t"]
+        self.Loss_def += feedback["loss_def_t"]
+        if self.Loss >= (1+self.alpha)*self.Loss_def - self.Ca:
+            return np.array([1])
+        else:
+            return np.array([0])
+
+
 if __name__ == "__main__":
     from OGD import OGD
     import utils

@@ -32,12 +32,21 @@ class Experiment:
             count += 1
 
     def add_to_history(self, dictionary):
+        conv = {'beta': 'beta',
+                'loss_t': 'L_t',
+                'loss_def_t': 'LT_t',
+                'best_loss_t': 'LS_t'}
         for d in dictionary.keys():
             if d in ["beta", "loss_t", "loss_def_t", "best_loss_t"]:
-                if d not in self.history.keys():
-                    self.history[d] = np.array([[]])
-                axis = int(self.history[d].shape == (1, 0))
-                self.history[d] = np.append(self.history[d], [dictionary[d]], axis=axis)
+                d2 = conv[d]
+                if d2 not in self.history.keys():
+                    self.history[d2] = np.array([[d == 'beta']])
+                axis = int(self.history[d2].shape == (1, 0))
+                if len(self.history[d2]) > 1 and d != 'beta':
+                    init = self.history[d2][-1]
+                else:
+                    init = 0
+                self.history[d2] = np.append(self.history[d2], [init+dictionary[d]], axis=axis)
 
     def save(self, name=None, folder="../experiments"):
 

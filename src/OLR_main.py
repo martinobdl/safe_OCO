@@ -1,9 +1,6 @@
 from OGD import OGD
-from COGD import COGD
-from DPOGD import DPOGD
-from DPOGDMAX import DPOGDMAX
 from ADAGRAD import ADAGRAD
-from DPWrap import DPWRAP
+from DPWrap import DPWRAP, CWRAP
 from experiment import Experiment
 from linear_regression import SafeOLR
 from constant_uniform import ConstantStrategy
@@ -12,12 +9,22 @@ import argparse
 
 if __name__ == "__main__":
     import numpy as np
+    from matplotlib import pyplot as plt
 
-    beta = np.array([0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.91])
-    baselinex0 = beta.copy()
     n = 10
-    alpha = 0.01
+    beta = np.array([0.1/(n-1)]*(n-1)+[0.9])
+    baselinex0 = beta.copy()
+    alpha = 0.05
     x0 = np.ones(n)/n
+    e_l = 0
+    nk = 1100
+    c = 2
+    e_u = nk*c
+    G = nk**0.5
+    D = 2**0.5  # (n*c*2)**0.5
+    K_0 = D/G/2**0.5
+
+    print(G*D-alpha*e_l)
 
     check_point = 10
 
@@ -31,9 +38,11 @@ if __name__ == "__main__":
     assert Dtilde < min([2**0.5, 2**0.5*(1-min(beta)), 2**0.5*max(beta)])
     print(Dtilde)
 
-    baselinex0[np.argmax(beta)] -= Dtilde*(1/2)**0.5
-    baselinex0[np.argmin(beta)] += Dtilde*(1/2)**0.5
+    baselinex0 = beta + Dtilde/((n-1)/n)**0.5/n
+    baselinex0[np.argmax(beta)] -= Dtilde/((n-1)/n)**0.5
     baseline = ConstantStrategy(x0=baselinex0)
+
+    breakpoint()
 
     D = 2**0.5
     G = 2*((2*n)**0.5 + 0.1)*n**0.5
@@ -47,7 +56,7 @@ if __name__ == "__main__":
     # dpogd = DPOGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
     # dpogdmax = DPOGDMAX(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
     # cogd = COGD(x0=x0, K_0=K_0, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
-    # adagrad = ADAGRAD(x0=x0)
+    adagrad = ADAGRAD(x0=x0)
     dpwrap = DPWRAP(base, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
     env = SafeOLR(baseline, n, max_T=100000, beta=beta, rnd=seed)
 
@@ -74,3 +83,14 @@ if __name__ == "__main__":
     exp = Experiment(dpwrap, env, check_point=check_point)
     exp.run()
     exp.save(folder=folder)
+
+    plt.figure()
+    plt.plot(exp.history['L_t']-exp.history['LS_t'])
+    plt.plot(-(exp.history['L_t']-exp.history['LT_t']*(1+alpha)))
+    plt.plot(exp.history['L_t']-exp.history['LT_t'])
+    plt.legend(['regret', 'bdgt', 'reg_def'])
+    plt.show()
+
+    plt.figure()
+    plt.plot(exp.history['beta'])
+    plt.show()

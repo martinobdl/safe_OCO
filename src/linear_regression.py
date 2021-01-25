@@ -15,7 +15,7 @@ class OLR(Env):
             self.beta = self.beta_tmp / np.sum(self.beta_tmp)
         else:
             assert len(beta) == self.n_feature
-            assert sum(beta) == 1
+            assert abs(sum(beta) - 1) < 1e-3
             assert sum([b >= 0 for b in beta]) == self.n_feature
             self.beta = np.array(beta)
 
@@ -126,13 +126,15 @@ class SafeOLR(OLR):
 
 if __name__ == "__main__":
     from OGD import OGD
-    from DPOGD import DPOGD
-    from COGD import COGD
+    from DPWrap import DPWRAP
+    from DPWrap import CWRAP
     from experiment import Experiment
     from constant_uniform import ConstantStrategy
+    from matplotlib import pyplot as plt
 
-    n = 10000
+    n = 100
     x0 = np.ones(n)/n
+    # x0 = np.array([0.01, 0.01, 0.01, 0.1, 0.01, 0.01, 0.01, 0.01, 0.01, 0.1])
 
     alpha = 0.01
     e_l = 0
@@ -146,11 +148,21 @@ if __name__ == "__main__":
     x0 = np.ones(n)/n
     tmp = np.random.uniform(size=n)
     baselinex0 = tmp/np.sum(tmp)
+    baselinex0 = np.array([0.01, 0.01, 0.01, 0.1, 0.01, 0.01, 0.01, 0.01, 0.01, 0.91])
     baseline = ConstantStrategy(x0=baselinex0)
 
     algo = OGD(x0, K_0)
-    algo2 = COGD(x0, K_0, alpha, G, D, e_l, e_u)
-    algo3 = DPOGD(x0, K_0, alpha, G, D, e_l, e_u)
-    env = SafeOLR(baseline, n)
+    algo3 = CWRAP(algo, alpha, G, D, e_l, e_u)
+    env = SafeOLR(baseline, n, max_T=100000)
     exp = Experiment(algo3, env)
     exp.run()
+
+    plt.figure()
+    plt.plot(np.cumsum(exp.history['loss_t'])-np.cumsum(exp.history['best_loss_t']))
+    plt.plot(-(np.cumsum(exp.history['loss_t'])-np.cumsum(exp.history['loss_def_t'])*(1+alpha)))
+    plt.legend(['regret', 'bdgt'])
+    plt.show()
+
+    plt.figure()
+    plt.plot(exp.history['beta'])
+    plt.show()
