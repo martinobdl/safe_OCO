@@ -53,8 +53,8 @@ class Experiment:
         if name is not None:
             name = name
         else:
-            name = ''.join(np.random.choice(list(ascii_letters), size=10))
-            name = str(int(time.time()))
+            name = ''.join(np.random.choice(list(ascii_letters), size=10)) + str(os.getpid())
+            # name = str(int(time.time())) + str(os.getpid())
 
         if not os.path.exists(folder):
             os.makedirs(folder)
