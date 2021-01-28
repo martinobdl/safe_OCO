@@ -55,6 +55,14 @@ def project(v):
     return np.maximum(v-theta, 0)
 
 
+def project_None(v):
+    return v
+
+
+def project_fixed(v, c):
+    return np.minimum(np.maximum(v, -c), c)
+
+
 def clip(x, a, b):
     return np.minimum(np.maximum(x, a), b)
 
