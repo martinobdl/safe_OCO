@@ -10,14 +10,7 @@ class OLR(Env):
         self.max_T = max_T
         self.seed()
         self.std = std
-        if beta is None:
-            self.beta_tmp = np.random.uniform(size=self.n_feature)
-            self.beta = self.beta_tmp / np.sum(self.beta_tmp)
-        else:
-            assert len(beta) == self.n_feature
-            assert abs(sum(beta) - 1) < 1e-3
-            assert sum([b >= 0 for b in beta]) == self.n_feature
-            self.beta = np.array(beta)
+        self.beta = np.array(beta)
 
     def step(self, prediction):
         new_x = np.random.uniform(size=self.n_feature)
