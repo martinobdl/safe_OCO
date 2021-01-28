@@ -52,8 +52,8 @@ class DPWRAP:
         if bdgt >= self.Ca:
             return np.array([0])
         else:
-            return max(np.array([0]),
-                       1+(self.Loss - self.Loss_def*(1+self.alpha)-self.alpha*self.e_l)/(self.G*D))
+            return min(np.array([1]), max(np.array([0]),
+                       1+(self.Loss - self.Loss_def*(1+self.alpha)-self.alpha*self.e_l)/(self.G*D)))
 
     def to_dict(self):
         return {
