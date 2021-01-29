@@ -17,6 +17,7 @@ class Experiment:
     def restart(self):
         self.algo.restart()
         feedback = self.env.restart()
+        self.time = str(int(time.time()))
         return feedback
 
     def run(self):
@@ -54,7 +55,7 @@ class Experiment:
             name = name
         else:
             name = ''.join(np.random.choice(list(ascii_letters), size=10)) + str(os.getpid())
-            # name = str(int(time.time())) + str(os.getpid())
+            name += self.time
 
         if not os.path.exists(folder):
             os.makedirs(folder)
