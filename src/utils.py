@@ -88,6 +88,8 @@ def clean_dump_vector(a: str) -> np.ndarray:
             return _clean(x[1:], sign=False)
         elif x.replace('.', '', 1).isdigit():
             return (sign*2-1)*float(x)
+        elif x[-4:-2] == 'e-':
+            return float(x)
         else:
             breakpoint()
             raise Exception("{} is an invalid string".format(x))
