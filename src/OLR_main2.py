@@ -15,12 +15,12 @@ if __name__ == "__main__":
 
     n = 40
     m = 1
-    beta = np.random.uniform(size=n)*2*m-m
+    beta = np.zeros(n)
     # beta[0] = m
     # beta[-1] = -m
     baselinex0 = beta.copy()
     alpha = 0.01
-    x0 = np.ones(n)/n
+    x0 = np.random.uniform(size=n)*2*m-m
     e_l = 1e-2
     nk = 100
     c = m
@@ -82,11 +82,11 @@ if __name__ == "__main__":
     exp5.save(folder=folder)
 
     plt.figure()
-    plt.plot(exp1.history['L_t']-exp1.history['LS_t'])
-    plt.plot(exp2.history['L_t']-exp2.history['LS_t'])
-    plt.plot(exp3.history['L_t']-exp3.history['LS_t'])
-    plt.plot(exp4.history['L_t']-exp4.history['LS_t'])
-    plt.plot(exp5.history['L_t']-exp5.history['LS_t'])
+    plt.semilogy(exp1.history['L_t']-exp1.history['LS_t'])
+    plt.semilogy(exp2.history['L_t']-exp2.history['LS_t'])
+    plt.semilogy(exp3.history['L_t']-exp3.history['LS_t'])
+    plt.semilogy(exp4.history['L_t']-exp4.history['LS_t'])
+    plt.semilogy(exp5.history['L_t']-exp5.history['LS_t'])
     plt.legend(['dp', 'c', 'ogd', 'adagrad', 'r2'])
     plt.title('RT')
     plt.show()
