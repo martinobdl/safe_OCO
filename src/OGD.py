@@ -18,7 +18,7 @@ class OGD(Strategy):
         if self.projection == 'simplex':
             x_t1 = utils.project(y_t1)
         else:
-            x_t1 = y_t1
+            x_t1 = self.projection(y_t1)
         self.x_t = x_t1
         prediction = {}
         prediction["x_t"] = x_t1
