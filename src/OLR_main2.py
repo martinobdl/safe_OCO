@@ -13,7 +13,7 @@ if __name__ == "__main__":
     import numpy as np
     from matplotlib import pyplot as plt
 
-    n = 20
+    n = 40
     m = 1
     beta = np.random.uniform(size=n)*2*m-m
     # beta[0] = m
@@ -24,9 +24,9 @@ if __name__ == "__main__":
     e_l = 1e-2
     nk = 100
     c = m
-    e_u = 20
-    G = nk**0.5
+    e_u = n*c*2
     D = (n*c*2)**0.5
+    G = 2*D*c
     K_0 = D/G/2**0.5
 
     print(G*D-alpha*e_l)
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     cwrap = CWRAP(OGD(x0, K_0, projection), alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
     algo0 = RewardDoublingNDGuess(baselinex0, alpha*e_l/2)
     reward2 = ConversionConstraint(algo0, projection)
-    env = SafeOLR(baseline, n, max_T=100000, beta=beta, rnd=seed)
+    env = SafeOLR(baseline, n, max_T=100000, beta=beta, rnd=seed, eps_m=0.8)
 
     exp1 = Experiment(dpwrap, env, check_point=check_point)
     exp1.run()
@@ -80,7 +80,6 @@ if __name__ == "__main__":
     exp5 = Experiment(reward2, env, check_point=check_point)
     exp5.run()
     exp5.save(folder=folder)
-
 
     plt.figure()
     plt.plot(exp1.history['L_t']-exp1.history['LS_t'])
