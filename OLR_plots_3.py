@@ -6,6 +6,12 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 from src import utils
 import tikzplotlib
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-D', type=float, default=1)
+parser.add_argument('-s', type=int, default=3)
+args = parser.parse_args()
 
 # Regret
 
@@ -16,17 +22,41 @@ D = defaultdict(lambda: [])
 
 colors = {
         'OGD': 'red',
-        'DPOGD': 'green',
-        'COGD': 'orange',
-        'DPOGDMAX': 'cyan',
-        'ADAGRAD': 'blue'
+        'DPWRAP_OGD': 'green',
+        'CWRAP_OGD': 'orange',
+        'ADAGRAD': 'blue',
+        'ConversionConstrained_RewardDoubligNDGuess': 'deeppink'
         }
 
-for yaml_file in glob.glob('experiments/OLR/*.yaml'):
-    with open(yaml_file, 'r') as f:
-        d = dict(yaml.load(f, Loader=yaml.FullLoader))
+label = {
+        'OGD': 'OGD',
+        'DPWRAP_OGD': 'CP-OGD',
+        'CWRAP_OGD': 'CS-OGD',
+        'ADAGRAD': 'Adagrad',
+        'ConversionConstrained_RewardDoubligNDGuess': 'CRDG'
+        }
 
-    if d['algo']['name'] != 'DPOGDMAX':
+marker = {
+        'OGD': '.',
+        'DPWRAP_OGD': '>',
+        'CWRAP_OGD': '+',
+        'ADAGRAD': '*',
+        'ConversionConstrained_RewardDoubligNDGuess': 'p'
+        }
+
+linestyle = {
+        'OGD': 'solid',
+        'DPWRAP_OGD': 'dotted',
+        'CWRAP_OGD': 'dashed',
+        'ADAGRAD': 'dashdot',
+        'ConversionConstrained_RewardDoubligNDGuess': 'solid'
+        }
+
+for yaml_file in glob.glob('experiments2/OLR2/*.yaml'):
+    try:
+        with open(yaml_file, 'r') as f:
+            d = dict(yaml.load(f, Loader=yaml.FullLoader))
+
         base_np = os.path.splitext(os.path.basename(yaml_file))[0]+'.npz'
         np_file = os.path.join(os.path.dirname(yaml_file), base_np)
         data = dict(np.load(np_file))
@@ -35,31 +65,32 @@ for yaml_file in glob.glob('experiments/OLR/*.yaml'):
         x0_true = utils.clean_dump_vector(d['env']['beta'])
         D_tilde = np.linalg.norm(x0_true-x0_safe)
 
-        L_t = np.cumsum(data['loss_t'])
-        L_best_t = np.cumsum(data['best_loss_t'])
-        R_t = L_t - L_best_t
-        if abs(D_tilde - 0.5) < 1e-3:
-            D[d['algo']['name']].append(R_t)
+        L_t = data['L_t'].T[0]
+        LS_t = data['LS_t'].T[0]
+        alpha = 0.01
+        bdg = L_t - LS_t
+        name = d['algo']['name']
+        if abs(D_tilde - args.D) < 1e-3:
+            D[name].append(bdg)
+    except:
+        print(yaml_file)
+        pass
 
-
-label = {
-        'OGD': 'OGD',
-        'DPOGD': 'DPOGD',
-        'COGD': 'COGD',
-        'ADAGRAD': 'AdaGrad'
-        }
-
+keys = [k for k, _ in sorted(label.items(), key=lambda x: x[1])]
 
 plt.figure()
-for k in D.keys():
+for k in keys:
     T = np.arange(len(D[k][0]))*d['checkpoints']
-    idx = np.arange(0, len(T), 500)
-    T, Y, LB, UB = utils.compute_mean_and_CI_bstr_vector(T, D[k], idx=idx, speed=1)
-    plt.plot(T, Y, label=label[k], color=colors[k])
+    idx = np.arange(0, 10050, 100)
+    # idx = np.arange(0, len(T)/10, 1)
+    T, Y, LB, UB = utils.compute_mean_and_CI_bstr_vector(T, D[k], idx=idx, speed=args.s)
+    plt.plot(T, Y, color=colors[k], label=label[k], linestyle=linestyle[k], marker=marker[k], markevery=10, markersize=3)
     plt.fill_between(T, LB, UB, alpha=0.2, color=colors[k])
-plt.legend()
-# plt.grid(True)
-tikzplotlib.save("teximgs/OLR_regret.tex")
+# plt.legend()
+plt.xlim(right=T[-1]-30)
+plt.hlines(0, plt.xlim()[0], plt.xlim()[1], linestyles='dotted', color='k', linewidth=0.8)
+plt.xlabel(r"$t$")
 plt.ylabel(r"$R_t$")
-plt.xlabel(r"$time$")
+plt.tight_layout()
+tikzplotlib.save("teximgs/OLR_regret.tex")
 plt.show()

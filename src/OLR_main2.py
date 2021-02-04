@@ -34,7 +34,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-D', type=float, default=1.5)
     parser.add_argument('-seed', type=int, default=1)
-    parser.add_argument('-algo', type=int, default="dpwrap")
+    parser.add_argument('-algo', type=str, default="dpwrap")
     args = parser.parse_args()
 
     projection = lambda x: utils.project_fixed(x, c)
@@ -50,14 +50,15 @@ if __name__ == "__main__":
     baseline = ConstantStrategy(x0=baselinex0)
 
     folder = "experiments2/OLR"
+    folder = "/tmp"
 
     base = OGD(x0, K_0, projection)
     adagrad = ADAGRAD(x0=x0)
     dpwrap = DPWRAP(OGD(x0, K_0, projection), alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
     cwrap = CWRAP(OGD(x0, K_0, projection), alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
-    algo0 = RewardDoublingNDGuess(baselinex0, alpha*e_l/2)
+    algo0 = RewardDoublingNDGuess(baselinex0, alpha*e_l/2+100)
     reward2 = ConversionConstraint(algo0, projection)
-    env = SafeOLR(baseline, n, max_T=100000, beta=beta, rnd=seed, eps_m=1)
+    env = SafeOLR(baseline, n, max_T=50000, beta=beta, rnd=seed, eps_m=1)
 
     if args.algo == 'dpwrap':
         algo = dpwrap
@@ -73,3 +74,7 @@ if __name__ == "__main__":
     exp = Experiment(algo, env, check_point=check_point)
     exp.run()
     exp.save(folder=folder)
+
+    plt.figure()
+    plt.plot(exp.history['L_t']-exp.history['LS_t'])
+    plt.show()

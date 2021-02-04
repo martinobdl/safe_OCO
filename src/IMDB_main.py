@@ -25,11 +25,12 @@ if __name__ == "__main__":
 
     rnd = 1
 
-    env = SafeIMDB(times=1, rnd=rnd)
+    env = SafeIMDB(times=100, rnd=rnd)
     projection = lambda x: utils.project_fixed(x, c)
 
     check_point = 10
     folder = "experiments2/IMDB"
+    folder = "/tmp/IMDB"
 
     base = OGD(x0, K_0, projection=projection)
     cwrap = CWRAP(base, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)

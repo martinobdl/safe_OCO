@@ -5,6 +5,8 @@ from experiment import Experiment
 from linear_regression import SafeOLR
 from constant_uniform import ConstantStrategy
 import argparse
+import utils
+from PFREE import RewardDoublingNDGuess, ConversionConstraint
 
 
 if __name__ == "__main__":
@@ -49,13 +51,16 @@ if __name__ == "__main__":
     e_l = 0.
     e_u = (2*n)**0.5 + 0.1
     folder = "experiments2/OLR"
+    folder = "/tmp"
 
     K_0 = D/G/2**0.5
 
     base = OGD(x0, K_0*0.3)
     adagrad = ADAGRAD(x0=x0)
-    dpwrap = DPWRAP(OGD(x0, K_0*10), alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
-    cwrap = CWRAP(OGD(x0, K_0*10), alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
+    dpwrap = DPWRAP(OGD(x0, K_0*20), alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
+    cwrap = CWRAP(OGD(x0, K_0*20), alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)
+    algo0 = RewardDoublingNDGuess(x0, 0.03)
+    reward2 = ConversionConstraint(algo0, utils.project)
     env = SafeOLR(baseline, n, max_T=100000, beta=beta, rnd=seed)
 
     exp1 = Experiment(dpwrap, env, check_point=check_point)
@@ -74,26 +79,32 @@ if __name__ == "__main__":
     exp4.run()
     exp4.save(folder=folder)
 
-    # plt.figure()
-    # plt.plot(exp1.history['L_t']-exp1.history['LS_t'])
-    # plt.plot(exp2.history['L_t']-exp2.history['LS_t'])
-    # plt.plot(exp3.history['L_t']-exp3.history['LS_t'])
-    # plt.plot(exp4.history['L_t']-exp4.history['LS_t'])
-    # plt.legend(['dp', 'c', 'ogd', 'adagrad'])
-    # plt.title('RT')
-    # plt.show()
+    exp5 = Experiment(reward2, env, check_point=check_point)
+    exp5.run()
+    exp5.save(folder=folder)
 
-    # plt.figure()
-    # plt.plot(-(exp1.history['L_t']-exp1.history['LT_t']*(1+alpha)))
-    # plt.plot(-(exp2.history['L_t']-exp2.history['LT_t']*(1+alpha)))
-    # plt.plot(-(exp3.history['L_t']-exp3.history['LT_t']*(1+alpha)))
-    # plt.plot(-(exp4.history['L_t']-exp4.history['LT_t']*(1+alpha)))
-    # plt.legend(['dp', 'c', 'ogd', 'adagrad'])
-    # plt.title('ZT')
-    # plt.show()
+    plt.figure()
+    plt.plot(exp1.history['L_t']-exp1.history['LS_t'])
+    plt.plot(exp2.history['L_t']-exp2.history['LS_t'])
+    plt.plot(exp3.history['L_t']-exp3.history['LS_t'])
+    plt.plot(exp4.history['L_t']-exp4.history['LS_t'])
+    plt.plot(exp5.history['L_t']-exp5.history['LS_t'])
+    plt.legend(['dp', 'c', 'ogd', 'adagrad'])
+    plt.title('RT')
+    plt.show()
 
-    # plt.figure()
-    # plt.plot(exp2.history['beta'])
-    # plt.plot(exp1.history['beta'])
-    # plt.legend(['c', 'dp'])
-    # plt.show()
+    plt.figure()
+    plt.plot(-(exp1.history['L_t']-exp1.history['LT_t']*(1+alpha)))
+    plt.plot(-(exp2.history['L_t']-exp2.history['LT_t']*(1+alpha)))
+    plt.plot(-(exp3.history['L_t']-exp3.history['LT_t']*(1+alpha)))
+    plt.plot(-(exp4.history['L_t']-exp4.history['LT_t']*(1+alpha)))
+    plt.plot(-(exp5.history['L_t']-exp5.history['LT_t']*(1+alpha)))
+    plt.legend(['dp', 'c', 'ogd', 'adagrad'])
+    plt.title('ZT')
+    plt.show()
+
+    plt.figure()
+    plt.plot(exp2.history['beta'])
+    plt.plot(exp1.history['beta'])
+    plt.legend(['c', 'dp'])
+    plt.show()

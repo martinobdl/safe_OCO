@@ -16,12 +16,37 @@ beta = {}
 
 colors = {
         'OGD': 'red',
-        'DPOGD': 'green',
-        'COGD': 'orange',
-        'ADAM': 'black',
+        'DPWRAP_OGD': 'green',
+        'CWRAP_OGD': 'orange',
+        'ADAGRAD': 'blue',
+        'ConversionConstrained_RewardDoubligNDGuess': 'deeppink'
         }
 
-for yaml_file in glob.glob('experiments/FIN/*.yaml'):
+label = {
+        'OGD': 'OGD',
+        'DPWRAP_OGD': 'CP-OGD',
+        'CWRAP_OGD': 'CS-OGD',
+        'ADAGRAD': 'Adagrad',
+        'ConversionConstrained_RewardDoubligNDGuess': 'CRDG'
+        }
+
+marker = {
+        'OGD': '.',
+        'DPWRAP_OGD': '>',
+        'CWRAP_OGD': '+',
+        'ADAGRAD': '*',
+        'ConversionConstrained_RewardDoubligNDGuess': 'p'
+        }
+
+linestyle = {
+        'OGD': 'solid',
+        'DPWRAP_OGD': 'dotted',
+        'CWRAP_OGD': 'dashed',
+        'ADAGRAD': 'dashdot',
+        'ConversionConstrained_RewardDoubligNDGuess': 'solid'
+        }
+
+for yaml_file in glob.glob('experiments2/FIN/*.yaml'):
 
     with open(yaml_file, 'r') as f:
         d = dict(yaml.load(f, Loader=yaml.FullLoader))
@@ -31,8 +56,8 @@ for yaml_file in glob.glob('experiments/FIN/*.yaml'):
         np_file = os.path.join(os.path.dirname(yaml_file), base_np)
         data = dict(np.load(np_file))
 
-        L_t = np.cumsum(data['loss_t'])
-        L_def_t = np.cumsum(data['loss_def_t'])
+        L_t = data['L_t'].T[0]
+        L_def_t = data['LT_t'].T[0]
         # L_best = np.cumsum(data['best_loss_t'])
         b = 0.80
         u = 1.04
@@ -57,10 +82,12 @@ for k in W.keys():
     T = np.arange(1, len(W[k])+1)*d['checkpoints']
     idx = np.arange(1, len(T)+1, 100)
     T = T[idx]
-    plt.plot(T, W[k][idx], label=k, color=colors[k])
+    plt.plot(T, W[k][idx], color=colors[k], label=label[k], marker=marker[k], linestyle=linestyle[k], markevery=50, markersize=3)
+plt.xlabel(r"$t$")
+plt.ylabel(r"$W_t$")
 # plt.plot(T, D, label='def*b', color='blue')
 # plt.plot(T, D2, label='def', color='magenta')
-plt.legend()
+# plt.legend()
 # plt.grid(True)
 # plt.title('W')
 plt.show(block=False)
@@ -71,10 +98,11 @@ plt.figure()
 for k in B.keys():
     T = np.arange(len(B[k]))*d['checkpoints']
     T = T[idx]
-    plt.plot(T, B[k][idx], label=k, color=colors[k])
+    plt.plot(T, B[k][idx], color=colors[k], label=label[k], marker=marker[k], linestyle=linestyle[k], markevery=50, markersize=3)
+plt.xlabel(r"$t$")
+plt.ylabel(r"$P_t$")
 plt.legend()
 # plt.grid(True)
-plt.title('bdgt')
 plt.show(block=False)
 
 tikzplotlib.save("teximgs/FIN_budget.tex")
@@ -84,6 +112,5 @@ for k in beta.keys():
     T = np.arange(len(beta[k]))*d['checkpoints']
     plt.plot(T, beta[k], label=k, color=colors[k])
 plt.legend()
-plt.grid(True)
 plt.title('beta')
 plt.show()
