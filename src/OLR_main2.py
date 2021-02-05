@@ -20,7 +20,6 @@ if __name__ == "__main__":
     alpha = 0.01
     x0 = np.random.uniform(size=n)*2*m-m
     e_l = 1e-2
-    nk = 100
     c = m
     e_u = n*c*2
     D = (n*c*2)**0.5
@@ -37,7 +36,8 @@ if __name__ == "__main__":
     parser.add_argument('-algo', type=str, default="dpwrap")
     args = parser.parse_args()
 
-    projection = lambda x: utils.project_fixed(x, c)
+    def projection(x):
+        return utils.project_fixed(x, c)
 
     Dtilde = args.D
     seed = args.seed

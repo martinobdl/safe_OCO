@@ -38,18 +38,4 @@ class ADAGRAD(Strategy):
 
 if __name__ == "__main__":
 
-    # from linear_regression import OLR
-    from IMDB_env import IMDB
-    from experiment import Experiment
-    import utils
-
-    n = 10000
-    x0 = np.ones(n)/n
-    algo = ADAGRAD(x0)
-    # env = OLR(n, max_T=1000)
-    env = IMDB()
-    exp = Experiment(algo, env)
-    exp.run()
-
-    print("ADAM: ", utils.accuracy(env, algo.x_t))
-    print("Best: ", utils.accuracy(env, env.beta_best))
+    pass
