@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     baseline = ConstantStrategy(x0=baselinex0)
 
-    folder = "experiments2/OLR"
+    folder = "experiments/OLR"
 
     base = OGD(x0, K_0, projection)
     adagrad = ADAGRAD(x0=x0)

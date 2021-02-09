@@ -28,7 +28,7 @@ if __name__ == "__main__":
     env = SafeSPAM(times=100, rnd=rnd)
 
     check_point = 10
-    folder = "experiments2/SPAM"
+    folder = "experiments/SPAM"
 
     def projection(x):
         return utils.project_fixed(x, c)

@@ -9,7 +9,7 @@ class SPAM(Env):
         self.X = np.load('./data/spam.npy')
         self.target = np.load('./data/spam_target.npy')
         self.lam = 1
-        self.beta_best = np.load('./data/beta_logistic_best2.npy')[0]
+        self.beta_best = np.load('./data/beta_logistic_SPAM_best.npy')[0]
         self.max_T = self.X.shape[0]*times
 
     def step(self, prediction):
@@ -62,7 +62,7 @@ class SPAM(Env):
 class SafeSPAM(SPAM):
     def __init__(self, times=1, rnd=1):
         super().__init__(times, rnd)
-        self.beta_def = np.load('./data/beta_logistic_weak2.npy')[0]
+        self.beta_def = np.load('./data/beta_logistic_SPAM_weak.npy')[0]
 
     def step(self, prediction):
         idx = np.random.randint(0, len(self.X))

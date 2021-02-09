@@ -25,9 +25,8 @@ if __name__ == "__main__":
     ll = 0.96
     G = u/ll
     e_u = float(np.log(u)-np.log(ll))
-    folder = "experiments2/FIN"
+    folder = "experiments/FIN"
     alpha = float(beta/(T*e_u))
-    print(alpha)
 
     K_0 = D/G/2**0.5
 

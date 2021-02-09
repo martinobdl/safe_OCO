@@ -31,7 +31,7 @@ if __name__ == "__main__":
         return utils.project_fixed(x, c)
 
     check_point = 10
-    folder = "experiments2/IMDB"
+    folder = "experiments/IMDB"
 
     base = OGD(x0, K_0, projection=projection)
     cs = CS(base, alpha=alpha, G=G, D=D, e_l=e_l, e_u=e_u)

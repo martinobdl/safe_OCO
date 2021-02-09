@@ -7,10 +7,10 @@ import utils
 class IMDB(Env):
     def __init__(self, times=1, rnd=1):
         self.rnd = rnd
-        self.X = scipy.sparse.load_npz('./data/BoW.npz').toarray()  # [:1000]
+        self.X = scipy.sparse.load_npz('./data/IMDB_BoW.npz').toarray()  # [:1000]
         self.target = np.loadtxt('./data/IMDB_target.csv', delimiter=',')  # [:1000]
         self.lam = 0
-        self.beta_best = np.load('./data/beta_logistic_IMDB_best2.npy')
+        self.beta_best = np.load('./data/beta_logistic_IMDB_best.npy')
         self.max_T = self.X.shape[0]*times
 
     def step(self, prediction):
@@ -125,29 +125,4 @@ class SafeIMDB(IMDB):
 
 
 if __name__ == "__main__":
-    from OGD import OGD
-    from DPOGD import DPOGD
-    from COGD import COGD
-    from experiment import Experiment
-
-    n = 10000
-    x0 = np.ones(n)/n
-
-    alpha = 0.01
-    e_l = 0
-    nk = 1100
-    c = 2
-    e_u = nk*c
-    G = nk**0.5
-    D = (n*c*2)**0.5
-    K_0 = D/G/2**0.5
-
-    algo = OGD(x0, K_0, projection=None)
-    algo2 = COGD(x0, K_0, alpha, G, D, e_l, e_u, projection=None)
-    algo3 = DPOGD(x0, K_0, alpha, G, D, e_l, e_u, projection=None)
-    env = SafeIMDB()
-    exp = Experiment(algo3, env)
-    exp.run()
-
-    print("accuracy algo: ", utils.accuracy(env, algo3.x_t))
-    print("accuracy best :", utils.accuracy(env, env.beta_best))
+    pass
