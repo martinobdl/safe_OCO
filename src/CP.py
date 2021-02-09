@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class DPWRAP:
+class CP:
     def __init__(self, base, alpha, G, D, e_l, e_u):
         self.base = base
         self.D = D
@@ -11,7 +11,7 @@ class DPWRAP:
         self.restart()
         self.alpha = alpha
         self.Ca = min(self.G*self.D, self.e_u - self.e_l) - self.alpha*self.e_l
-        self.name = "DPWRAP_" + base.name
+        self.name = "CP_" + base.name
 
     def __call__(self, feedback):
         choice = self._forward(feedback)
@@ -66,49 +66,3 @@ class DPWRAP:
                 "e_u": self.e_u
                 }
 
-
-class CWRAP(DPWRAP):
-
-    def __init__(self, base, alpha, G, D, e_l, e_u):
-        super().__init__(base, alpha, G, D, e_l, e_u)
-        self.name = "CWRAP_" + self.base.name
-
-    def b(self, feedback):
-        self.Loss += feedback["loss_t"]
-        self.Loss_def += feedback["loss_def_t"]
-        if self.Loss >= (1+self.alpha)*self.Loss_def - self.Ca:
-            return np.array([1])
-        else:
-            return np.array([0])
-
-
-if __name__ == "__main__":
-    from OGD import OGD
-    import utils
-    from IMDB_env import SafeIMDB
-    from DPOGD import DPOGD
-    from experiment import Experiment
-
-    n = 10000
-    x0 = np.ones(n)/n
-
-    alpha = 0.01
-    e_l = 0
-    nk = 1100
-    c = 2
-    e_u = nk*c
-    G = nk**0.5
-    D = (n*c*2)**0.5
-    K_0 = D/G/2**0.5
-
-    base = OGD(x0, K_0, projection=None)
-    dpwrap = DPWRAP(base, alpha, G, D, e_l, e_u)
-    dpogd = DPOGD(x0, K_0, alpha, G, D, e_l, e_u)
-    env = SafeIMDB()
-    exp = Experiment(dpwrap, env)
-    exp.run()
-
-    breakpoint()
-
-    print("accuracy algo: ", utils.accuracy(env, dpwrap.x_t))
-    print("accuracy best :", utils.accuracy(env, env.beta_best))

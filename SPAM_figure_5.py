@@ -4,7 +4,6 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import src.utils as utils
-import tikzplotlib
 
 
 DP = []
@@ -17,34 +16,34 @@ beta = {}
 
 colors = {
         'OGD': 'red',
-        'DPWRAP_OGD': 'green',
-        'CWRAP_OGD': 'orange',
+        'CP_OGD': 'green',
+        'CS_OGD': 'orange',
         'ADAGRAD': 'blue',
-        'ConversionConstrained_RewardDoubligNDGuess': 'deeppink'
+        'CRDG': 'deeppink'
         }
 
 label = {
         'OGD': 'OGD',
-        'DPWRAP_OGD': 'CP-OGD',
-        'CWRAP_OGD': 'CS-OGD',
+        'CP_OGD': 'CP-OGD',
+        'CS_OGD': 'CS-OGD',
         'ADAGRAD': 'Adagrad',
-        'ConversionConstrained_RewardDoubligNDGuess': 'CRDG'
+        'CRDG': 'CRDG'
         }
 
 marker = {
         'OGD': '.',
-        'DPWRAP_OGD': '>',
-        'CWRAP_OGD': '+',
+        'CP_OGD': '>',
+        'CS_OGD': '+',
         'ADAGRAD': '*',
-        'ConversionConstrained_RewardDoubligNDGuess': 'p'
+        'CRDG': 'p'
         }
 
 linestyle = {
         'OGD': 'solid',
-        'DPWRAP_OGD': 'dotted',
-        'CWRAP_OGD': 'dashed',
+        'CP_OGD': 'dotted',
+        'CS_OGD': 'dashed',
         'ADAGRAD': 'dashdot',
-        'ConversionConstrained_RewardDoubligNDGuess': 'solid'
+        'CRDG': 'solid'
         }
 
 for yaml_file in glob.glob('experiments2/SPAM/*.yaml'):
@@ -63,7 +62,7 @@ for yaml_file in glob.glob('experiments2/SPAM/*.yaml'):
     R[d['algo']['name']] = R_t
     B[d['algo']['name']] = bdg
     L[d['algo']['name']] = L_t
-    if d['algo']['name'] in ['DPWRAP_OGD', 'CWRAP_OGD']:
+    if d['algo']['name'] in ['CP_OGD', 'CS_OGD']:
         beta[d['algo']['name']] = data['beta']
 
 keys = [k for k, _ in sorted(label.items(), key=lambda x: x[1])]
@@ -73,37 +72,27 @@ for k in keys:
     T = np.arange(1, len(R[k])+1)*d['checkpoints']
     idx = utils.range_to_idx(np.arange(1, len(T), 10))
     T = T[idx]
-    plt.plot(T, R[k][idx], label=label[k], color=colors[k], marker=marker[k], linestyle=linestyle[k], markevery=500, markersize=3)
+    plt.plot(T, R[k][idx], label=label[k], color=colors[k], marker=marker[k],
+             linestyle=linestyle[k], markevery=500, markersize=3)
 plt.ylim(top=2100)
+plt.legend()
 plt.xlim(right=T[-1]-30)
 plt.xlabel(r"$t$")
 plt.ylabel(r"$R_t$")
 plt.show(block=False)
 
-tikzplotlib.save("teximgs/SPAM_regret.tex")
 
 plt.figure()
 for k in keys:
     T = np.arange(len(B[k]))*d['checkpoints']
     idx = utils.range_to_idx(np.arange(1, 4000, 1))
     T = T[idx]
-    plt.plot(T, B[k][idx], label=label[k], color=colors[k], marker=marker[k], linestyle=linestyle[k], markevery=400, markersize=3)
+    plt.plot(T, B[k][idx], label=label[k], color=colors[k], marker=marker[k],
+             linestyle=linestyle[k], markevery=400, markersize=3)
 plt.xlim(right=T[-1]-30)
 plt.legend()
 plt.hlines(0, plt.xlim()[0], plt.xlim()[1], linestyles='dotted', color='k', linewidth=0.8)
 plt.legend()
 plt.xlabel(r"$t$")
 plt.ylabel(r"$Z_t$")
-plt.show(block=False)
-
-tikzplotlib.save("teximgs/SPAM_bdgt.tex")
-
-plt.figure()
-for k in beta.keys():
-    T = np.arange(len(beta[k]))*d['checkpoints']
-    plt.plot(T, beta[k], label=k, color=colors[k])
-plt.legend()
-plt.grid(True)
-plt.title('beta')
 plt.show()
-

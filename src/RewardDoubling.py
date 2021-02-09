@@ -8,7 +8,7 @@ class RewardDoubling1D(Strategy):
         self.x0 = x0
         self.eta_1 = eta_1
         self.H = H
-        self.name = '1ddoubling'
+        self.name = "RD1D"
         self.restart()
 
     def _forward(self, feedback):
@@ -48,6 +48,7 @@ class RewardDoubling1DGuess(Strategy):
         self.epoch = 1
         self.H = 0
         self.restart()
+        self.name = "RD1DG"
 
     def restart(self):
         self.x_t = self.x0
@@ -85,7 +86,7 @@ class RewardDoublingNDGuess(Strategy):
         self.n = len(x0)
         self.eps = eps
         self.reset()
-        self.name = "RewardDoubligNDGuess"
+        self.name = "RDG"
 
     def reset(self):
         self.algos = [RewardDoubling1DGuess(self.x0[i], self.eps/self.n) for i in range(self.n)]
@@ -108,74 +109,12 @@ class RewardDoublingNDGuess(Strategy):
         return prediction
 
 
-class SmoothRewardDoubling1D(Strategy):
-    def __init__(self, x0, eta):
-        super().__init__()
-        self.eta = eta
-        self.x0 = x0
-        self.restart()
-        self.name = "SmoothRewardDoubling1D"
-
-    def _forward(self, feedback):
-        self.t += 1
-        grad_rew = feedback["grad_t"]
-        self.St += -grad_rew
-        self.Gt = abs(self.St)
-        if self.t == 0 or self.Gt == 0:
-            self.x_t = self.x0
-        else:
-            sign = 1 if self.St > 0 else -1
-            self.x_t = self.x0 + self.eta*sign*self.B(self.Gt, self.t + 5)
-
-        prediction = {}
-        prediction['x_t'] = self.x_t
-        return prediction
-
-    def B(self, x, y):
-        return np.exp(x/y**0.5)/y**(3/2)
-
-    def restart(self):
-        self.x_t = self.x0
-        self.Gt = 0
-        self.St = 0
-        self.t = 0
-
-
-class SmoothRewardDoublingND(Strategy):
-
-    def __init__(self, x0, eps):
-        super().__init__()
-        self.x0 = x0
-        self.n = len(x0)
-        self.eps = eps
-        self.reset()
-        self.name = "SmoothRewardDoublingND"
-
-    def reset(self):
-        self.algos = [SmoothRewardDoubling1D(self.x0[i], self.eps/self.n) for i in range(self.n)]
-        self.x_t = self.x0
-
-    def _forward(self, feedback):
-        tmp = []
-        for i in range(self.n):
-            grad_i = feedback["grad_t"][i]
-            f = {}
-            f['grad_t'] = grad_i
-            p = self.algos[i]._forward(f)
-            xi = p['x_t']
-            tmp.append(xi)
-        self.x_t = np.array(tmp)
-        prediction = {}
-        prediction['x_t'] = self.x_t
-        return prediction
-
-
 class ConversionConstraint(Strategy):
     def __init__(self, algo, projection):
         super().__init__()
         self.algo = algo
         self.projection = projection
-        self.name = "ConversionConstrained_" + self.algo.name
+        self.name = "C" + self.algo.name
         self.reset()
 
     def reset(self):
@@ -213,44 +152,4 @@ class ConversionConstraint(Strategy):
 
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    import utils
-
-    T = 2**18
-    eta = 0.01
-    x0 = np.array([0, 0])
-    # x0 = 0
-    grad = np.random.uniform(size=(T, 2))*2 - np.array([0.9, 1.1])  # grad of reward
-    # grad = np.random.uniform(size=(T, 1))*2-0.99
-    H = np.sum(grad**2)
-
-    Q = [0]
-    X = []
-
-    feedback = {}
-    # algo0 = SmoothRewardDoublingND(x0, 1)
-    algo0 = RewardDoublingNDGuess(x0, 0.01)
-    algo = ConversionConstraint(algo0, utils.project)
-    for t in range(T):
-        x = algo.x_t
-        feedback['loss_t'] = -np.dot(grad[t, :], x)
-        feedback['grad_t'] = -grad[t, :]
-
-        # feedback['loss_t'] = -grad[t]*x
-        # feedback['grad_t'] = -grad[t]
-
-        p = algo._forward(feedback)
-        Q.append(Q[-1] - feedback['loss_t'])
-        X.append(p['x_t'])
-
-    X = np.array(X)
-
-    plt.figure()
-    # plt.plot(X)
-    plt.plot(X[:, 0])
-    plt.plot(X[:, 1])
-    plt.show()
-
-    plt.figure()
-    plt.plot(Q)
-    plt.show()
+    pass

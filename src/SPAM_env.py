@@ -6,11 +6,9 @@ import utils
 class SPAM(Env):
     def __init__(self, times=1, rnd=1):
         self.rnd = rnd
-        self.X = np.load('./data/spam2.npy')
+        self.X = np.load('./data/spam.npy')
         self.target = np.load('./data/spam_target.npy')
         self.lam = 1
-        # self.beta_best = np.load('./data/beta_logistic_spam_best2.npy')[0]
-        # self.beta_best = np.load('./data/beta_adagrad_best.npy')
         self.beta_best = np.load('./data/beta_logistic_best2.npy')[0]
         self.max_T = self.X.shape[0]*times
 
