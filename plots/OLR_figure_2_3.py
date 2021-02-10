@@ -136,7 +136,7 @@ for k in keys:
     plt.plot(T, Y, color=colors[k], label=label[k], linestyle=linestyle[k],
              marker=marker[k], markevery=10, markersize=8)
     plt.fill_between(T, LB, UB, alpha=0.2, color=colors[k])
-# plt.legend()
+plt.legend()
 plt.title('Fig2(a) OLR Regret')
 plt.xlim(right=T[-1]-30)
 plt.hlines(0, plt.xlim()[0], plt.xlim()[1], linestyles='dotted', color='k', linewidth=0.8)

@@ -78,6 +78,7 @@ for k in W.keys():
     T = T[idx]
     plt.plot(T, W[k][idx], color=colors[k], label=label[k], marker=marker[k],
              linestyle=linestyle[k], markevery=50, markersize=8)
+plt.legend()
 plt.title('Fig7(a) Wealth')
 plt.xlabel(r"$t$")
 plt.ylabel(r"$W_t$")
