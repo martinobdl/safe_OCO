@@ -12,8 +12,9 @@ parser.add_argument('-D', type=float, default=0.5)
 parser.add_argument('-s', type=int, default=1)
 args = parser.parse_args()
 
-B = defaultdict(lambda: [])
-Dr = defaultdict(lambda: [])
+L = defaultdict(lambda: {})
+R = defaultdict(lambda: [])
+D = defaultdict(lambda: [])
 CPOGD = defaultdict(lambda: [])
 CSOGD = defaultdict(lambda: [])
 OGD = defaultdict(lambda: [])
@@ -74,9 +75,12 @@ for yaml_file in glob.glob('experiments/OLR/*.yaml'):
         T = int(10000/d['checkpoints'])
         r = (data['L_t'][T] - data['LS_t'][T])[0]
         name = d['algo']['name']
+        seed = d['env']['seed']
         if abs(D_tilde - args.D) < 1e-3 or name in ['ADAGRAD', 'OGD']:
-            B[name].append(bdg)
-            Dr[name].append(reg)
+            L[name][seed] = L_t
+            R[name].append(reg)
+            if name not in ['ADAGRAD', 'OGD']:
+                D[seed] = L_def_t
 
         D_tilde = np.round(np.linalg.norm(x0_true-x0_safe), 1)
         if d['algo']['name'] == 'OGD':
@@ -107,14 +111,17 @@ keys = [k for k, _ in sorted(label.items(), key=lambda x: x[1])]
 
 plt.figure()
 for k in keys:
-    T = np.arange(len(B[k][0]))*d['checkpoints']
+    T = np.arange(len(L[k][1]))*d['checkpoints']
     idx = np.arange(0, 1050, 10)
-    T, Y, LB, UB = utils.compute_mean_and_CI_bstr_vector(T, B[k], idx=idx, speed=args.s)
+    # B = (1+alpha)*np.array(list(D.values())) - L[k]
+    B = [(1+alpha)*D[s] - L[k][s] for s in D.keys()]
+    T, Y, LB, UB = utils.compute_mean_and_CI_bstr_vector(T, B, idx=idx, speed=args.s)
     plt.plot(T, Y, label=label[k], color=colors[k], marker=marker[k],
-             markevery=10, linestyle=linestyle[k], markersize=3)
+             markevery=10, linestyle=linestyle[k], markersize=8)
     plt.fill_between(T, LB, UB, alpha=0.2, color=colors[k])
 plt.legend()
 plt.xlim(right=T[-1]-30)
+plt.title('Fig2(b) OLR Budget')
 plt.hlines(0, plt.xlim()[0], plt.xlim()[1], linestyles='dotted', color='k', linewidth=0.8)
 plt.xlabel(r"$t$")
 plt.ylabel(r"$Z_t$")
@@ -123,13 +130,14 @@ plt.show(block=False)
 
 plt.figure()
 for k in keys:
-    T = np.arange(len(Dr[k][0]))*d['checkpoints']
+    T = np.arange(len(R[k][0]))*d['checkpoints']
     idx = np.arange(0, 10050, 100)
-    T, Y, LB, UB = utils.compute_mean_and_CI_bstr_vector(T, Dr[k], idx=idx, speed=args.s)
+    T, Y, LB, UB = utils.compute_mean_and_CI_bstr_vector(T, R[k], idx=idx, speed=args.s)
     plt.plot(T, Y, color=colors[k], label=label[k], linestyle=linestyle[k],
-             marker=marker[k], markevery=10, markersize=3)
+             marker=marker[k], markevery=10, markersize=8)
     plt.fill_between(T, LB, UB, alpha=0.2, color=colors[k])
 # plt.legend()
+plt.title('Fig2(a) OLR Regret')
 plt.xlim(right=T[-1]-30)
 plt.hlines(0, plt.xlim()[0], plt.xlim()[1], linestyles='dotted', color='k', linewidth=0.8)
 plt.xlabel(r"$t$")
@@ -154,8 +162,9 @@ for k in keys:
         Y = np.mean(Y)*np.ones_like(Y)
         LB = np.mean(LB)*np.ones_like(LB)
         UB = np.mean(UB)*np.ones_like(UB)
-    plt.plot(T, Y, label=label[k], color=colors[k], marker=marker[k], markevery=1, linestyle=linestyle[k], markersize=3)
+    plt.plot(T, Y, label=label[k], color=colors[k], marker=marker[k], markevery=1, linestyle=linestyle[k], markersize=8)
     plt.fill_between(T, LB, UB, alpha=0.2, color=colors[k])
+plt.title('Fig3 Terminal Regret')
 plt.ylim(top=10000)
 plt.ylim(bottom=-100)
 plt.legend()

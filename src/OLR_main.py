@@ -29,7 +29,7 @@ if __name__ == "__main__":
     check_point = 1
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-D', type=float, default=1.5)
+    parser.add_argument('-D', type=float, default=0.5)
     parser.add_argument('-seed', type=int, default=1)
     parser.add_argument('-algo', type=str, default="CP")
     args = parser.parse_args()

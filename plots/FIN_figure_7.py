@@ -77,7 +77,8 @@ for k in W.keys():
     idx = np.arange(1, len(T)+1, 100)
     T = T[idx]
     plt.plot(T, W[k][idx], color=colors[k], label=label[k], marker=marker[k],
-             linestyle=linestyle[k], markevery=50, markersize=5)
+             linestyle=linestyle[k], markevery=50, markersize=8)
+plt.title('Fig7(a) Wealth')
 plt.xlabel(r"$t$")
 plt.ylabel(r"$W_t$")
 plt.show(block=False)
@@ -88,7 +89,8 @@ for k in B.keys():
     T = np.arange(len(B[k]))*d['checkpoints']
     T = T[idx]
     plt.plot(T, B[k][idx], color=colors[k], label=label[k], marker=marker[k],
-             linestyle=linestyle[k], markevery=50, markersize=5)
+             linestyle=linestyle[k], markevery=50, markersize=8)
+plt.title('Fig7(b) Wealth Budget')
 plt.xlabel(r"$t$")
 plt.ylabel(r"$P_t$")
 plt.legend()

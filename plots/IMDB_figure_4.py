@@ -69,8 +69,9 @@ for k in keys:
     idx = utils.range_to_idx(np.arange(1, len(T), 100))
     T = T[idx]
     plt.plot(T, R[k][idx], label=label[k], color=colors[k], marker=marker[k],
-             markevery=50, linestyle=linestyle[k], markersize=3)
+             markevery=50, linestyle=linestyle[k], markersize=8)
 plt.xlim(right=T[-1]-30)
+plt.title('Fig4(a) IMDB Regret')
 plt.legend()
 plt.xlabel(r"$t$")
 plt.ylabel(r"$R_t$")
@@ -83,9 +84,10 @@ for k in keys:
     idx = utils.range_to_idx(np.arange(1, len(T)*0.4, 10))
     T = T[idx]
     plt.plot(T, B[k][idx], label=label[k], color=colors[k], marker=marker[k],
-             markevery=200, linestyle=linestyle[k], markersize=3)
+             markevery=200, linestyle=linestyle[k], markersize=8)
 plt.xlim(right=T[-1]-30)
 plt.legend()
+plt.title('Fig4(b) IMDB Budget')
 plt.hlines(0, plt.xlim()[0], plt.xlim()[1], linestyles='dotted', color='k', linewidth=0.8)
 plt.xlabel(r"$t$")
 plt.ylabel(r"$Z_t$")
