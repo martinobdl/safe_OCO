@@ -12,7 +12,9 @@ Id: 4470
  pip3 install -r requirements.txt
  ```
 
-It is suggested to use a virtual environment to run theese experiments.
+It is suggested to use a virtual environment to run these experiments.
+
+Install [parallel](https://www.gnu.org/software/parallel/) to parallalize the experiments.
 
 ### Experiments
 
@@ -25,25 +27,30 @@ The provided experimental environments are:
 
 The experiments can be run with the following command:
 
-`
-/bin/bash run_experiments.sh n s
-`
+```bash
+./run_experiments.sh n s
+```
 
-where `n` si the number of cores used to parellalize the experiments, and `s` is the number of seeds for the OLR experiment (30 has been used in the paper).
+Where `n` is the number of workers used to parellalize the experiments, and `s` is the number of seeds for the OLR experiment (30 has been used in the paper).
 
 This will save the results of the experiments in the `./experiments` folder.
-After this step, one could plot the figures in the paper with the python scripts provided in the `./plots` folder.
+
+Run `export PYTHONPATH='.'` to make sure that python add `.` to the `sys.path` directory list.
+
+After this step, one could plot the figures in the paper with the python scripts provided in the `./plots` folder, e.g. `python3 plots/IMDB_figure_4.py`.
 
 ---
 
-The experimental pipeline is organized as follows: for each experiment the corrisponding main file contains an instance of the experiment class, on which we call the run() method. After that we commented out the call to the save method that saves a yaml file (describing completely the experiment) and the results.
+The experimental pipeline is organized as follows: for each experiment the corresponding main file contains an instance of the experiment class, on which we call the run() method. After that we commented out the call to the save method that saves a yaml file (describing completely the experiment) and the results.
 These output files should be used to compute the performance metrics and to plot the results.
 
 ---
 
-The data used to run the Online Portfolio Optimization experiment is quite large, and it is not provided in this folder. In order to obtain it run the followng command:
+The data used to run the Online Portfolio Optimization experiment is quite large, and it is not provided in this folder. In order to obtain it run the following command:
 
-`python3 download_fin_data.py`
+```bash
+python3 download_fin_data.py
+```
 
 This will put the required data into the `./data` folder.
 
