@@ -2,8 +2,8 @@
 
 Code for the paper: Conservative Online Convex Optimization
 
-Submitted to: ICML 2021  
-Id: 4470
+Submitted to: ECML 2021  
+Id: 271
 
 ### Requirements
  Install the requirements with:
