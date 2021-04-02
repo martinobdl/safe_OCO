@@ -1,0 +1,76 @@
+\begin{tikzpicture}
+%/*
+\definecolor{color0}{rgb}{1,0.0784313725490196,0.576470588235294}
+\definecolor{color1}{rgb}{1,0.647058823529412,0}
+\pgfplotsset{
+    compat=newest,
+    scaled y ticks = false,
+    width=\fwidth*0.45,
+    height=\fheight,
+    axis on top,
+    xticklabel style={text width=2em,align=center},
+    % xticklabels={\empty},
+    % xmin=-5,xmax=5,
+    % ymin=-5,ymax=5,
+    xminorticks=true,
+    yminorticks=true,
+    ylabel shift={-0.5em},
+    ylabel style={align=center}
+}
+%       
+    \begin{groupplot}[ 
+        group style={
+        group name=my_plots,
+        group size=2 by 1,
+        vertical sep=45pt,
+        horizontal sep=55pt
+        },
+    ]
+    % -------------------------------------------------------------------------------------------------------------------
+    % Plot [1, 1]
+    %-----------
+    \nextgroupplot[
+        height=6cm, width=7cm,
+        tick align=outside,
+        tick pos=left,
+        x grid style={white!69.0196078431373!black},
+        xlabel={\(\displaystyle t\)},
+        xmin=-22980, xmax=459990,
+        xtick style={color=black},
+        y grid style={white!69.0196078431373!black},
+        ylabel={\(\displaystyle R_t(\mathfrak{U})\)},
+        ymin=-255.478192524673, ymax=2100,
+        ytick style={color=black}
+    ]
+    \input{/Users/Martino/Documents/GitHub/safe_OCO/imgs_tex/data_SPAM_regret}
+    % (Relative) Coordinate at top of the first plot
+    \coordinate (c1) at (rel axis cs:0,1);
+    %-----------
+    % Plot [1, 2]
+    %-----------
+    \nextgroupplot[
+        legend style={at={($(0,0)+(-1cm,+3.5cm)$)},legend columns=6,fill=none,draw=black,anchor=center,align=center},
+        legend to name=fred,
+        height=6cm, width=7cm,
+        legend cell align={left},
+        legend style={fill opacity=0.8, draw opacity=1, text opacity=1, at={(1.03,0.97)}, anchor=north west, draw=white!80!black},
+        tick align=outside,
+        tick pos=left,
+        x grid style={white!69.0196078431373!black},
+        xlabel={\(\displaystyle t\)},
+        xmin=-1989, xmax=39960,
+        xtick style={color=black},
+        y grid style={white!69.0196078431373!black},
+        ylabel={\(\displaystyle Z_t(\mathfrak{U})\)},
+        ymin=-274.303975643003, ymax=555.96321127787,
+        ytick style={color=black}
+    ]
+    \input{/Users/Martino/Documents/GitHub/safe_OCO/imgs_tex/data_SPAM_bdgt}
+    \coordinate (c2) at (rel axis cs:1,1);% I moved this to the upper right corner
+    \end{groupplot}
+    \coordinate (c3) at ($(c1)!.5!(c2)$);
+    \node[below = 0.8cm of my_plots c1r1.south] {(a)};
+    \node[below = 0.8cm of my_plots c2r1.south] {(b)};
+    \node[below] at ($(c3)+(0cm, 1cm)$) %|- current bounding box.south)
+      {\pgfplotslegendfromname{fred}};
+\end{tikzpicture}%
